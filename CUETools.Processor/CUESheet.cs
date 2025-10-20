@@ -1136,6 +1136,11 @@ namespace CUETools.Processor
                     _eacLog = tags.Get("LOG");
                     if (_eacLog == null) _eacLog = tags.Get("LOGFILE");
                     if (_eacLog == null) _eacLog = tags.Get("EACLOG");
+                    _logFiles = new List<CUEToolsSourceFile>();
+                    _defaultLog = Path.GetFileNameWithoutExtension(pathIn);
+                    foreach (string logPath in Directory.GetFiles(_inputDir, "*.log"))
+                        try { _logFiles.Add(new CUEToolsSourceFile(logPath, new StreamReader(logPath, CUESheet.Encoding))); }
+                        catch { }
                     if (cuesheetTag != null)
                     {
                         sr = new StringReader(cuesheetTag);
@@ -3883,7 +3888,8 @@ namespace CUETools.Processor
             }
 
             StringWriter sw = new StringWriter();
-            sw.WriteLine(String.Format("REM COMMENT \"CUETools generated dummy CUE sheet\""));
+            if (_config.writeDummyCUESheetComment)
+                sw.WriteLine(String.Format("REM COMMENT \"CUETools generated dummy CUE sheet\""));
             int trackNo = 0;
             foreach (FileSystemInfo file in fileGroup.files)
             {
