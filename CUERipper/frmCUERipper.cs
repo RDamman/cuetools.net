@@ -39,6 +39,9 @@ namespace CUERipper
         private bool freezeReleasesUpdates_m = false;
         public readonly static XmlSerializerNamespaces xmlEmptyNamespaces = new XmlSerializerNamespaces(new XmlQualifiedName[] { XmlQualifiedName.Empty });
         public readonly static XmlWriterSettings xmlEmptySettings = new XmlWriterSettings { Indent = true, OmitXmlDeclaration = true };
+		//        static FileSystemWatcher _fileSystemWatcher = new FileSystemWatcher();
+		private System.Windows.Forms.Timer timerDriveReady = new System.Windows.Forms.Timer();
+		private bool _bDriveReady = false;
 
 		private void EnableDoubleBuffering(DataGridView dgv)
 		{
@@ -46,11 +49,24 @@ namespace CUERipper
 			pi.SetValue(dgv, true, null);
 		}
 
+        private void datagridviewTracks_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
+        {
+            // Controleer of de rij een datarij is (geen header of footer)
+            if (!datagridviewTracks.Rows[e.RowIndex].IsNewRow)
+            {
+                // Wissel achtergrondkleur om de twee rijen
+                if (e.RowIndex % 3 == 0)
+                    datagridviewTracks.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.FromArgb(0xF4, 0xF4, 0xF4); // Donkerdere kleur
+                else
+                    datagridviewTracks.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.White; // Standaardkleur
+            }
+        }
 
 		public frmCUERipper()
 		{
 			InitializeComponent();
 			EnableDoubleBuffering(datagridviewTracks);
+            datagridviewTracks.RowPrePaint += datagridviewTracks_RowPrePaint;
 			_config = new CUEConfig();
 			_startStop = new StartStop();
             cueRipperConfig = new CUERipperConfig();
@@ -65,7 +81,11 @@ namespace CUERipper
 			m_icon_mgr.SetExtensionIcon(".ogg", Properties.Resources.ogg);
 			m_icon_mgr.SetExtensionIcon(".opus", Properties.Resources.opus);
             m_icon_mgr.SetExtensionIcon(".wma", Properties.Resources.wma);
+			timerDriveReady.Interval = 1000; // 1 seconde
+            timerDriveReady.Tick += onTimerDriveStatus;
+            timerDriveReady.Start();
 		}
+
 
 		string[] OutputPathUseTemplates = {
 			"%music%\\%artist%\\[%year% - ]%album%\\%artist% - %album%[ '('disc %discnumberandname%')'].cue",
@@ -174,7 +194,7 @@ namespace CUERipper
             {
                 System.Diagnostics.Trace.WriteLine(ex.Message);
             }
-
+            cueRipperConfig.TrackGridSettings.ApplyTo(datagridviewTracks);
             bindingSourceCR.DataSource = data;
             initDone = true;
             bnComboBoxDrives.ImageList = m_icon_mgr.ImageList;
@@ -300,7 +320,7 @@ namespace CUERipper
 		/// have changed.
 		/// </summary>
 		/// <param name="m">the windows message being processed</param>
-		protected override void WndProc(ref Message m)
+        /*protected override void WndProc(ref Message m)
 		{
 			if (m.Msg == WM_DEVICECHANGE)
 			{
@@ -327,7 +347,44 @@ namespace CUERipper
 				}
 			}
 			base.WndProc(ref m);
+		}*/
+
+
+        private void onTimerDriveStatus(object sender, EventArgs e)
+        {
+			if (selectedDriveInfo != null)
+			{
+				if (_workThread == null)
+				{
+					System.IO.DriveInfo driveInfo = new System.IO.DriveInfo(selectedDriveInfo.Path);
+					if (driveInfo.IsReady)
+					{
+						if (!_bDriveReady)
+						{
+                            _bDriveReady = true;
+                            UpdateDrive();
+						}
+					}
+					else if (!driveInfo.IsReady)
+					{
+						if (_bDriveReady)
+						{
+							if (data.selectedRelease != null)
+								data.selectedRelease.metadata.Save();
+                            _bDriveReady = false;
+							datagridviewTracksClear();
+                            UpdateDrive();
+						}
+					}
 		}
+            }
+			else
+				_bDriveReady = false;
+        }
+
+
+
+
 
 		private void DrivesLookup(object o)
 		{
@@ -441,7 +498,7 @@ namespace CUERipper
 
 		private void SetupControls()
 		{
-			bool running = _workThread != null;
+			bool running = (_workThread != null) && (_workThread.Name == "Ripping Thread");
 
 			bnComboBoxOutputFormat.Visible = outputFormatVisible;
 			txtOutputPath.Visible = !outputFormatVisible;
@@ -696,7 +753,8 @@ namespace CUERipper
 			selectedDriveInfo.drive.CorrectionQuality = trackBarSecureMode.Value;
 
 			_workThread = new Thread(Rip);
-			_workThread.Priority = ThreadPriority.BelowNormal;
+            _workThread.Name = "Ripping Thread";
+            _workThread.Priority = ThreadPriority.BelowNormal;
 			_workThread.IsBackground = true;
 			SetupControls();
 			_workThread.Start(selectedDriveInfo.drive);
@@ -727,9 +785,10 @@ namespace CUERipper
 		{
 			data.selectedRelease = bnComboBoxRelease.SelectedItem as CUEMetadataEntry;
 			UpdateOutputPath();
+			if (cueRipperConfig != null)
+				cueRipperConfig.TrackGridSettings.ReadFrom(datagridviewTracks);
 			datagridviewTracks.SuspendLayout();
 			listMetadata.BeginUpdate();
-//			datagridviewTracks.Rows.Clear();
 			listMetadata.Items.Clear();
 			if (!data.metadataMode)
 			{
@@ -738,7 +797,7 @@ namespace CUERipper
 				List<CueTrackMetaTOCWrapper> listTracksGrid = new List<CueTrackMetaTOCWrapper>();
 				if (data.selectedRelease != null)
 				{
-					Artist.Width = data.selectedRelease.metadata.IsVarious() ? 120 : 0;
+                    dataGridVwColArtist.Width = data.selectedRelease.metadata.IsVarious() ? 120 : 0;
 					CDImageLayout cdImageLayoutTOC = selectedDriveInfo.drive.TOC;
 					for (int i = 1; i <= cdImageLayoutTOC.TrackCount; i++)
 					{
@@ -783,9 +842,9 @@ namespace CUERipper
 					foreach (PropertyDescriptor p in sortedprops)
 						if (p.Name != "Tracks" && p.Name != "AlbumArt" && p.Name != "Id" && !p.Attributes.Contains(new System.Xml.Serialization.XmlIgnoreAttribute()))
 							listMetadata.Items.Add(new ListViewItem(new string[] { p.GetValue(data.selectedRelease.metadata).ToString(), p.Name }));
-				}
 				listMetadata.Items[0].Focused = true;
 				listMetadata.Items[0].Selected = true;
+				}
 				listMetadata.Focus();
 			}
 			else
@@ -802,7 +861,14 @@ namespace CUERipper
 					listMetadata.Items.Add(lvItem);
 					foreach (PropertyDescriptor p in props)
 					{
-						lvItem = new ListViewItem(new string[] { p.GetValue(track).ToString(), p.Name });
+						Object valueHelp = p.GetValue(track);
+						String sHelp;
+						if (valueHelp == null)
+							sHelp = "";
+						else
+							sHelp = valueHelp.ToString();
+						//
+                        lvItem = new ListViewItem(new string[] { sHelp, p.Name });
 						if (p.Name == "ISRC")
 							lvItem.ForeColor = SystemColors.GrayText;
 						listMetadata.Items.Add(lvItem);
@@ -818,6 +884,8 @@ namespace CUERipper
 //			ResizeList(datagridviewTracks, Title);
 			ResizeList(listMetadata, columnHeaderValue);
 			datagridviewTracks.ResumeLayout();
+            if (cueRipperConfig != null)
+                cueRipperConfig.TrackGridSettings.ApplyTo(datagridviewTracks);
 			listMetadata.EndUpdate();
 
             SelectAlbumArt();
@@ -1058,6 +1126,18 @@ namespace CUERipper
             });
         }
 
+		private void datagridviewTracksClear()
+		{
+            if (cueRipperConfig != null)
+                cueRipperConfig.TrackGridSettings.ReadFrom(datagridviewTracks);
+            datagridviewTracks.SuspendLayout();
+			datagridviewTracks.DataSource = new List<CueTrackMetaTOCWrapper>();
+			datagridviewTracks.ResumeLayout();
+            if (cueRipperConfig != null)
+                cueRipperConfig.TrackGridSettings.ApplyTo(datagridviewTracks);
+        }
+
+
 		private void UpdateDrive()
 		{
 			if (bnComboBoxDrives.SelectedItem as DriveInfo == null)
@@ -1128,10 +1208,6 @@ namespace CUERipper
 			}
 			else if ((e.KeyCode == Keys.Delete) && (e.Control))
 				deleteSelectionInGrid(datagridviewTracks);
-			/*			if (e.KeyCode == Keys.F2)
-						{
-							datagridviewTracks.FocusedItem.BeginEdit();
-						}*/
 		}
 
 		private void listTracks_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -1157,9 +1233,22 @@ namespace CUERipper
 				e.CancelEdit = true;
 		}
 
+		public int NextColumnOnDisplayIndex(DataGridViewColumnCollection dgvcol, int iColumnIndex)
+		{
+			int iDisplayIndexNew = dgvcol[iColumnIndex].DisplayIndex + 1;
+			//
+			foreach (DataGridViewColumn datagridviewColumn in dgvcol)
+			{
+				if (datagridviewColumn.DisplayIndex == iDisplayIndexNew)
+					return datagridviewColumn.Index;
+            }
+			return -1;
+        }
+
+
+
 		protected void pasteClipboardInGrid(DataGridView dataGridViewIn)
 		{
-
 			// bepalen selectie
 			// indien 0/1 cel focus of geselecteerd => startcel + plakken meerdere cellen vanaf dit beginpunt
 			// indien meerdere cellen geselecteerd => Eerste waarde clipboard tot TAB of CR/LF plakken in alle geselecteerde cellen
@@ -1175,13 +1264,25 @@ namespace CUERipper
 						datagridviewcell = dataGridViewIn.CurrentCell;
 					if (datagridviewcell != null)
 					{
+						int iColStart = datagridviewcell.ColumnIndex;
 						string[] asRows = sClipboard.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 						for (int iRow = datagridviewcell.RowIndex, iT1 = 0; (iRow < dataGridViewIn.RowCount) && (iT1 < asRows.Length); iRow++, iT1++)
 						{
 							string[] asCols = asRows[iT1].Split(new string[] { "\t" }, StringSplitOptions.None);
-							for (int iCol = datagridviewcell.ColumnIndex, iT2 = 0; (iCol < dataGridViewIn.ColumnCount) && (iT2 < asCols.Length); iCol++, iT2++)
+                            int iColHelp = 0;
+                            for (int iT2 = 0; (iT2 < asCols.Length); iT2++)
+                            {
+                                if (iT2 == 0)
+									iColHelp = iColStart;
+								else
+									iColHelp = NextColumnOnDisplayIndex(dataGridViewIn.Columns, iColHelp);
+								//
+								if (iColHelp >= 0)
 							{
-								dataGridViewIn.Rows[iRow].Cells[iCol].Value = asCols[iT2];
+                                    DataGridViewCell dgvcell = dataGridViewIn.Rows[iRow].Cells[iColHelp];
+                                    if (dgvcell.ValueType.Name.Equals("String"))
+                                        dgvcell.Value = asCols[iT2];
+								}
 							}
 						}
 					}
@@ -1191,7 +1292,9 @@ namespace CUERipper
 					string sHelp = sClipboard.Split(new string[] { "\r\n", "\r", "\n", "\t" }, StringSplitOptions.None)[0];
 					for (int iT1 = 0; iT1 < dataGridViewIn.SelectedCells.Count; iT1++)
 					{
-						dataGridViewIn.SelectedCells[iT1].Value = sClipboard;
+						DataGridViewCell dgvcell = dataGridViewIn.SelectedCells[iT1];
+						if (dgvcell.ValueType.Name.Equals("String"))
+                            dgvcell.Value = sHelp;
 					}
 				}
 			}
@@ -1277,6 +1380,7 @@ namespace CUERipper
             using (TextWriter tw = new StringWriter())
             using (XmlWriter xw = XmlTextWriter.Create(tw, xmlEmptySettings))
             {
+                cueRipperConfig.TrackGridSettings.ReadFrom(datagridviewTracks);
                 CUERipperConfig.serializer.Serialize(xw, cueRipperConfig, xmlEmptyNamespaces);
                 sw.SaveText("CUERipper", tw.ToString());
             }
@@ -1802,7 +1906,7 @@ namespace CUERipper
 
         private void ResetAlbumArt()
         {
-            if (this.cueSheet != null)
+            if ((this.cueSheet != null) && (this.cueSheet.CTDB != null))
             {
                 this.cueSheet.CTDB.CancelRequest();
             }
@@ -2033,20 +2137,20 @@ namespace CUERipper
             }
         }
 
-        private void listMetadata_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
+		private void listMetadata_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
+			if (e.KeyCode == Keys.Enter)
+			{
                 if (listMetadata.FocusedItem != null && listMetadata.FocusedItem.Index + 1 < listMetadata.Items.Count)// && e.Label != null)
-                {
+				{
                     listMetadata.FocusedItem.Selected = false;
                     listMetadata.FocusedItem = listMetadata.Items[listMetadata.FocusedItem.Index + 1];
                     listMetadata.FocusedItem.Selected = true;
                     listMetadata.FocusedItem.BeginEdit();
-                }
-            }
-        }
-    }
+				}
+			}
+		}
+	}
 
 	internal class BackgroundWorkerArtworkArgs
     {

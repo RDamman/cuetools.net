@@ -24,13 +24,13 @@ namespace CUETools.Processor
 		public string Lyricist { get => _trackMetaData.Lyricist; set => _trackMetaData.Lyricist = value; }
 		public string Comment { get => _trackMetaData.Comment; set => _trackMetaData.Comment = value; }
 		//
-		public uint Start { get => _cdTrack.Start; }
-		public string StartMSF { get => _cdTrack.StartMSF; }
-		public uint Length { get => _cdTrack.Length; }
-		public string LengthMSF { get => _cdTrack.LengthMSF; }
+		//public uint Start { get => _cdTrack.Start; }
+		public string Start { get => _cdTrack.StartMSF; }
+		//public uint Length { get => _cdTrack.Length; }
+		public string Length { get => _cdTrack.LengthMSF; }
 		public string ISRC { get => _cdTrack.ISRC; }
-		public uint End { get => _cdTrack.End; }
-		public string EndMSF { get => _cdTrack.EndMSF; }
+		//public uint End { get => _cdTrack.End; }
+		public string End { get => _cdTrack.EndMSF; }
 		public uint Number { get => _cdTrack.Number; }
 		public uint Pregap { get => _cdTrack.Pregap; }
 //		public CDTrackIndex this[int key]
