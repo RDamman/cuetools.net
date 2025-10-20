@@ -1,6 +1,6 @@
 /**
  * CUETools.FLACCL: FLAC audio encoder using CUDA
- * Copyright (c) 2009-2021 Grigory Chudov
+ * Copyright (c) 2009-2024 Grigory Chudov
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,7 +31,7 @@ namespace CUETools.FLACCL.cmd
 	{
 		static void Usage()
 		{
-			Console.WriteLine("Usage    : CUETools.FLACCL.exe [options] <input.wav>");
+			Console.WriteLine("Usage    : CUETools.FLACCL.exe [options] <input.wav> (or \"-\" for stdin)");
 			Console.WriteLine();
 			Console.WriteLine("Options:");
 			Console.WriteLine();
@@ -220,7 +220,7 @@ namespace CUETools.FLACCL.cmd
 			}
 			if (!quiet)
 			{
-                Console.WriteLine("{0}, Copyright (C) 2010-2021 Grigory Chudov.", Codecs.FLACCL.AudioEncoder.Vendor);
+                Console.WriteLine("{0}, Copyright (C) 2010-2024 Grigory Chudov.", Codecs.FLACCL.AudioEncoder.Vendor);
 				Console.WriteLine("This is free software under the GNU GPLv3+ license; There is NO WARRANTY, to");
 				Console.WriteLine("the extent permitted by law. <http://www.gnu.org/licenses/> for details.");
 			}

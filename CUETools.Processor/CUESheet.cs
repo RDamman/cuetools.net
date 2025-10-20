@@ -24,7 +24,7 @@ namespace CUETools.Processor
     {
         #region Fields
 
-        public readonly static string CUEToolsVersion = "2.1.9";
+        public readonly static string CUEToolsVersion = "2.2.6";
 
         private bool _stop, _pause;
         private List<CUELine> _attributes;
@@ -744,7 +744,7 @@ namespace CUETools.Processor
                 if (!skip && pathextension == ".m3u")
                 {
                     var contents = new List<string>();
-                    using (StreamReader m3u = new StreamReader(path))
+                    using (StreamReader m3u = StreamReader_UTF_ANSI(path))
                     {
                         do
                         {
@@ -914,7 +914,14 @@ namespace CUETools.Processor
                 m_freedb.Hostname = _config.advanced.FreedbDomain;
                 m_freedb.ClientName = "CUETools";
                 m_freedb.Version = CUEToolsVersion;
-                m_freedb.SetDefaultSiteAddress("gnudb.gnudb.org");
+                try
+                {
+                    m_freedb.SetDefaultSiteAddress(_config.advanced.FreedbSiteAddress);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Trace.WriteLine("FreedbHelper.SetDefaultSiteAddress: " + ex.Message);
+                }
 
                 QueryResult queryResult;
                 QueryResultCollection coll;
@@ -1093,7 +1100,7 @@ namespace CUETools.Processor
                 if (_config.autoCorrectFilenames)
                     sr = new StringReader(CorrectAudioFilenames(_config, pathIn, false));
                 else
-                    sr = new StreamReader(pathIn, CUESheet.Encoding);
+                    sr = StreamReader_UTF_ANSI(pathIn);
 
                 _logFiles = new List<CUEToolsSourceFile>();
                 _defaultLog = Path.GetFileNameWithoutExtension(pathIn);
@@ -1445,7 +1452,7 @@ namespace CUETools.Processor
             }
 
             // Store the audio filenames, generating generic names if necessary
-            _hasSingleFilename = _sourcePaths.Count == 1;
+            _hasSingleFilename = (_sourcePaths.Count == 1 && TrackCount > 1); // Enable _hasTrackFilenames for CD-Singles with 1 track
             _singleFilename = _hasSingleFilename ? Path.GetFileName(_sourcePaths[0]) :
                 "Range.wav";
 
@@ -1718,12 +1725,16 @@ namespace CUETools.Processor
             {
                 sr = new StringReader(_eacLog);
                 bool isEACLog = false;
+                bool isXLDLog = false;
+                bool isXLDTracks = false;
+                bool isWhipperLog = false;
                 int trNo = 1;
                 while ((lineStr = sr.ReadLine()) != null)
                 {
                     if (isEACLog && trNo <= TrackCount)
                     {
-                        string[] s = { "Copy CRC ", "CRC копии" };
+                        // English, Bulgarian, Czech, Dutch/German, Italian, Japanese, Korean, Polish, Russian, Serbian, Simplified Chinese, Slovak, Spanish, Swedish
+                        string[] s = { "Copy CRC ", "Копиран CRC ", "CRC kopie ", "Kopie CRC ", "Copia CRC ", "コピーCRC ", "복사 CRC ", "CRC kopii ", "CRC копии ", "CRC kopije ", "复制 CRC ", "CRC kópie ", "Copiar CRC ", "Kopiera CRC " };
                         string[] s1 = { "CRC" };
                         string[] n = lineStr.Split(s, StringSplitOptions.None);
                         uint crc;
@@ -1736,12 +1747,42 @@ namespace CUETools.Processor
                                 _arVerify.CRCLOG(trNo++, crc);
                         }
                     }
+                    else if (isXLDLog && trNo <= TrackCount)
+                    {
+                        if (lineStr.Contains(" CRC32 hash  "))
+                        {
+                            // If a CRC is found before "Track 01" expect a disc CRC.
+                            if (!isXLDTracks)
+                                trNo = 0;
+                            string[] parts = lineStr.Split(':');
+                            if (parts.Length == 2 && uint.TryParse(parts[1], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var crc))
+                                _arVerify.CRCLOG(trNo++, crc);
+                        }
+                        else if (lineStr == "Track 01")
+                        {
+                            isXLDTracks = true;
+                        }
+                    }
+                    else if (isWhipperLog && trNo <= TrackCount)
+                    {
+                        string[] s = { "Copy CRC:" };
+                        string[] parts = lineStr.Split(s, StringSplitOptions.None);
+                        if (parts.Length == 2 && uint.TryParse(parts[1], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var crc))
+                            _arVerify.CRCLOG(trNo++, crc);
+                    }
                     else
                         if (lineStr.StartsWith("Exact Audio Copy")
                             || lineStr.StartsWith("EAC extraction logfile"))
                             isEACLog = true;
+                    else
+                        if (lineStr.StartsWith("X Lossless Decoder")
+                            || lineStr.StartsWith("XLD extraction logfile"))
+                            isXLDLog = true;
+                    else
+                        if (lineStr.StartsWith("Log created by: whipper"))
+                            isWhipperLog = true;
                 }
-                if (trNo == 2)
+                if (trNo == 2 && isEACLog)
                 {
                     _arVerify.CRCLOG(0, _arVerify.CRCLOG(1));
                     if (TrackCount > 1)
@@ -1773,24 +1814,30 @@ namespace CUETools.Processor
                     // TODO: load secondary album art?
                     // TODO: load uri150 version first, load full version in background of choice form?
                     var ms = new MemoryStream();
-                    if (CTDB.FetchFile(imageMeta.uri, ms))
+                    try
                     {
-                        TagLib.Picture pic = new TagLib.Picture(new TagLib.ByteVector(ms.ToArray()));
-                        pic.Description = imageMeta.uri;
-                        using (MemoryStream imageStream = new MemoryStream(pic.Data.Data, 0, pic.Data.Count))
-                            try
-                            {
+                        if (_config.advanced.coversSearch != CUEConfigAdvanced.CTDBCoversSearch.None && CTDB.FetchFile(imageMeta.uri, ms))
+                        {
+                            TagLib.Picture pic = new TagLib.Picture(new TagLib.ByteVector(ms.ToArray()));
+                            pic.Description = imageMeta.uri;
+                            using (MemoryStream imageStream = new MemoryStream(pic.Data.Data, 0, pic.Data.Count))
+                                try
+                                {
 #if NET47 || NET20
-                                var image = Image.FromStream(ms);
-                                pic.Description += $" ({image.Width}x{image.Height})";
-                                //if (image.Height > 0 && image.Width > 0 && (image.Height * 1.0 / image.Width) > 0.9 && (image.Width * 1.0 / image.Height) > 0.9)
-                                //    isSquare = true;
-                                // pic.MimeType = f(image.RawFormat);
+                                    var image = Image.FromStream(ms);
+                                    pic.Description += $" ({image.Width}x{image.Height})";
+                                    //if (image.Height > 0 && image.Width > 0 && (image.Height * 1.0 / image.Width) > 0.9 && (image.Width * 1.0 / image.Height) > 0.9)
+                                    //    isSquare = true;
+                                    // pic.MimeType = f(image.RawFormat);
 #endif
-                            }
-                            catch { }
+                                }
+                                catch { }
 
-                        _albumArt.Add(pic);
+                            _albumArt.Add(pic);
+                        }
+                    }
+                    catch (Exception)
+                    {
                     }
                 }
                 CheckStop();
@@ -1871,6 +1918,31 @@ namespace CUETools.Processor
             get
             {
                 return Encoding.Default;
+            }
+        }
+
+        public static StreamReader StreamReader_UTF_ANSI(string path)
+        {
+            // StreamReader() detects the encoding of files properly, if a BOM is present.
+            // Enable detection of UTF-8 files without BOM. Otherwise fall back to default encoding, which is typically ANSI.
+            try
+            {
+                // Check first for a BOM, else try with UTF-8. This allows detection of UTF-8 encoded files without BOM.
+                var sr = new StreamReader(path, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true), detectEncodingFromByteOrderMarks: true);
+                // Read the file, to detect the encoding
+                sr.ReadToEnd();
+                sr.BaseStream.Position = sr.CurrentEncoding.GetPreamble().Length; // Return StreamReader to Beginning, with or without BOM
+                sr.DiscardBufferedData();
+                return sr;
+            }
+            catch (DecoderFallbackException)
+            {
+                // Use Encoding.Default (typically ANSI)
+                var sr = new StreamReader(path, Encoding.Default);
+                sr.ReadToEnd();
+                sr.BaseStream.Position = 0;
+                sr.DiscardBufferedData();
+                return sr;
             }
         }
 
@@ -2227,7 +2299,7 @@ namespace CUETools.Processor
             else
             {
                 bool htoaToFile = ((OutputStyle == CUEStyle.GapsAppended) && _config.preserveHTOA &&
-                    (_toc.Pregap != 0));
+                    (_toc.Pregap > 75 * (_config.useHTOALengthThreshold ? 5 : 0)));
                 _destPaths = new string[TrackCount + (htoaToFile ? 1 : 0)];
                 if (htoaToFile)
                     _destPaths[0] = Path.Combine(OutputDir, _htoaFilename);
@@ -2239,7 +2311,13 @@ namespace CUETools.Processor
         public List<string> OutputExists()
         {
             List<string> outputExists = new List<string>();
-            bool outputCUE = Action == CUEAction.Encode && (OutputStyle != CUEStyle.SingleFileWithCUE || _config.createCUEFileWhenEmbedded);
+            bool outputCUE = Action == CUEAction.Encode &&
+                                       // Embedded, SingleFileWithCUE (0)
+                                       ((OutputStyle == CUEStyle.SingleFileWithCUE && _config.createCUEFileWhenEmbedded) ||
+                                       // Image + CUE, SingleFile (1)
+                                       OutputStyle == CUEStyle.SingleFile ||
+                                       // Track Modes: GapsPrepended (2), GapsAppended (3), GapsLeftOut (4)
+                                       ((int)OutputStyle > 1 && _config.createCUEFileInTracksMode));
             bool outputAudio = Action == CUEAction.Encode && _audioEncoderType != AudioEncoderType.NoAudio;
             if (outputCUE)
                 outputExists.Add(_outputPath);
@@ -2306,12 +2384,12 @@ namespace CUETools.Processor
             }
         }
 
-        public static void WriteText(string path, string text)
+        public static void WriteText(CUEConfig _config, string path, string text)
         {
-            bool utf8Required = CUESheet.Encoding.GetString(CUESheet.Encoding.GetBytes(text)) != text;
-            var encoding = utf8Required ? Encoding.UTF8 : CUESheet.Encoding;
+            bool utf8Required = (_config.alwaysWriteUTF8CUEFile && Path.GetExtension(path) == ".cue") || (CUESheet.Encoding.GetString(CUESheet.Encoding.GetBytes(text)) != text);
+            var encoding = utf8Required ? new UTF8Encoding(_config.writeUTF8BOM) : CUESheet.Encoding;
             // Preserve original UTF-16LE encoding of EAC log files, which contain a log checksum
-            if ((text.StartsWith("Exact Audio Copy") || text.StartsWith("EAC extraction logfile")) && text.Contains("==== Log checksum"))
+            if (Path.GetExtension(path) == ".log" && text.StartsWith("Exact Audio Copy") && (text.EndsWith(" ====\r\n") || text.EndsWith(" ====\n")))
                 encoding = Encoding.Unicode;
             using (StreamWriter sw1 = new StreamWriter(path, false, encoding))
                 sw1.Write(text);
@@ -2377,7 +2455,7 @@ namespace CUETools.Processor
         public string GetM3UContents(CUEStyle style)
         {
             StringWriter sw = new StringWriter();
-            if (style == CUEStyle.GapsAppended && _config.preserveHTOA && _toc.Pregap != 0)
+            if (style == CUEStyle.GapsAppended && _config.preserveHTOA && _toc.Pregap > 75 * (_config.useHTOALengthThreshold ? 5 : 0))
                 WriteLine(sw, 0, _htoaFilename);
             for (int iTrack = 0; iTrack < TrackCount; iTrack++)
                 WriteLine(sw, 0, _trackFilenames[iTrack]);
@@ -2396,7 +2474,7 @@ namespace CUETools.Processor
 
         public string GetCUESheetContents(CUEStyle style)
         {
-            return GetCUESheetContents(style, (style == CUEStyle.GapsAppended && _config.preserveHTOA && _toc.Pregap != 0));
+            return GetCUESheetContents(style, (style == CUEStyle.GapsAppended && _config.preserveHTOA && _toc.Pregap > 75 * (_config.useHTOALengthThreshold ? 5 : 0)));
         }
 
         public string GetCUESheetContents(CUEStyle style, bool htoaToFile)
@@ -2642,7 +2720,7 @@ namespace CUETools.Processor
         {
             int[] destLengths;
             bool htoaToFile = ((OutputStyle == CUEStyle.GapsAppended) && _config.preserveHTOA &&
-                (_toc.Pregap != 0));
+                (_toc.Pregap > 75 * (_config.useHTOALengthThreshold ? 5 : 0)));
 
             if (_isCD)
                 DetectGaps();
@@ -2672,9 +2750,9 @@ namespace CUETools.Processor
                 if (_config.createEACLOG && _isCD)
                     cueContents = CUESheet.Encoding.GetString(CUESheet.Encoding.GetBytes(cueContents));
                 if (OutputStyle == CUEStyle.SingleFileWithCUE && _config.createCUEFileWhenEmbedded)
-                    WriteText(Path.ChangeExtension(_outputPath, ".cue"), cueContents);
-                else
-                    WriteText(_outputPath, cueContents);
+                    WriteText(_config, Path.ChangeExtension(_outputPath, ".cue"), cueContents);
+                else if (OutputStyle == CUEStyle.SingleFile || ((int)OutputStyle > 1 && _config.createCUEFileInTracksMode))
+                    WriteText(_config, _outputPath, cueContents);
             }
 
             if (_action == CUEAction.Verify)
@@ -2733,10 +2811,10 @@ namespace CUETools.Processor
                     _ripperLog = CUESheet.Encoding.GetString(CUESheet.Encoding.GetBytes(_ripperLog));
 
                 if (_ripperLog != null)
-                    WriteText(Path.ChangeExtension(_outputPath, ".log"), _ripperLog);
+                    WriteText(_config, Path.ChangeExtension(_outputPath, ".log"), _ripperLog);
                 else
                     if (_eacLog != null && _config.extractLog)
-                        WriteText(Path.ChangeExtension(_outputPath, ".log"), _eacLog);
+                        WriteText(_config, Path.ChangeExtension(_outputPath, ".log"), _eacLog);
 
                 if (_audioEncoderType != AudioEncoderType.NoAudio && _config.extractAlbumArt)
                     ExtractAlbumArt();
@@ -2831,7 +2909,7 @@ namespace CUETools.Processor
                 else
                 {
                     if (_config.createM3U)
-                        WriteText(Path.ChangeExtension(_outputPath, ".m3u"), GetM3UContents(OutputStyle));
+                        WriteText(_config, Path.ChangeExtension(_outputPath, ".m3u"), GetM3UContents(OutputStyle));
                     if (_audioEncoderType != AudioEncoderType.NoAudio)
                         for (int iTrack = 0; iTrack < TrackCount; iTrack++)
                         {
@@ -2884,6 +2962,10 @@ namespace CUETools.Processor
 
                                 if (_config.copyBasicTags && sourceFileInfo != null)
                                 {
+                                    if (fileInfo.Tag.TrackCount == 0)
+                                        fileInfo.Tag.TrackCount = sourceFileInfo.Tag.TrackCount;
+                                    if (fileInfo.Tag.Track == 0)
+                                        fileInfo.Tag.Track = sourceFileInfo.Tag.Track;
                                     if (fileInfo.Tag.Title == null && _tracks[iTrack]._fileInfo != null)
                                         fileInfo.Tag.Title = _tracks[iTrack]._fileInfo.Tag.Title;
                                     if (fileInfo.Tag.DiscCount == 0)
@@ -3194,7 +3276,7 @@ namespace CUETools.Processor
                 {
                     if (!Directory.Exists(OutputDir))
                         Directory.CreateDirectory(OutputDir);
-                    WriteText(Path.ChangeExtension(_outputPath, ".toc"), CUESheetLogWriter.GetTOCContents(this));
+                    WriteText(_config, Path.ChangeExtension(_outputPath, ".toc"), CUESheetLogWriter.GetTOCContents(this));
                 }
             }
             return GenerateVerifyStatus();
@@ -3394,7 +3476,7 @@ namespace CUETools.Processor
 
         internal void ApplyWriteOffset()
         {
-            if (_writeOffset == 0)
+            if (_writeOffset == 0 || _appliedWriteOffset)
                 return;
 
             int absOffset = Math.Abs(_writeOffset);
@@ -3822,7 +3904,7 @@ namespace CUETools.Processor
 
         public static string CorrectAudioFilenames(CUEConfig _config, string path, bool always)
         {
-            StreamReader sr = new StreamReader(path, CUESheet.Encoding);
+            StreamReader sr = StreamReader_UTF_ANSI(path);
             string cue = sr.ReadToEnd();
             sr.Close();
             string extension;
@@ -3985,7 +4067,7 @@ namespace CUETools.Processor
         {
             int iTrack, iIndex, iFile;
             int[] fileLengths;
-            bool htoaToFile = (style == CUEStyle.GapsAppended && _config.preserveHTOA && _toc.Pregap != 0);
+            bool htoaToFile = (style == CUEStyle.GapsAppended && _config.preserveHTOA && _toc.Pregap > 75 * (_config.useHTOALengthThreshold ? 5 : 0));
             bool discardOutput;
 
             if (style == CUEStyle.SingleFile || style == CUEStyle.SingleFileWithCUE)
@@ -4237,7 +4319,7 @@ namespace CUETools.Processor
                 if (ext == ".m3u")
                 {
                     FileGroupInfo m3uGroup = new FileGroupInfo(file, FileGroupInfoType.M3UFile);
-                    using (StreamReader m3u = new StreamReader(file.FullName))
+                    using (StreamReader m3u = StreamReader_UTF_ANSI(file.FullName))
                     {
                         do
                         {
@@ -4396,6 +4478,8 @@ namespace CUETools.Processor
                     return Go();
                 case "only if found":
                     return ArVerify.ExceptionStatus != WebExceptionStatus.Success ? WriteReport() : Go();
+                case "only if rip log present":
+                    return _eacLog == null ? "Rip log is not present." : Go();
                 case "repair":
                     {
                         UseCUEToolsDB("CUETools " + CUEToolsVersion, null, true, CTDBMetadataSearch.None);

@@ -12,13 +12,16 @@ namespace CUETools.Ripper
 	{
 		bool Open(char Drive);
         void EjectDisk();
-        void DisableEjectDrive(bool bDisable);
+        void DisableEjectDisc(bool bDisable);
         bool DetectGaps();
 		bool GapsDetected { get; }
 		CDImageLayout TOC { get; }
 		string ARName { get; }
 		string EACName { get; }
 		int DriveOffset { get; set; }
+		int DriveC2ErrorMode { get; set; }
+		bool ForceBE { get; set; }
+		bool ForceD8 { get; set; }
 		string RipperVersion { get; }
 		string CurrentReadCommand { get; }
 		int CorrectionQuality { get; set; }

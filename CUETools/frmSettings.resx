@@ -126,7 +126,7 @@
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="btnCancel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>268, 320</value>
+    <value>268, 337</value>
   </data>
   <data name="btnCancel.Size" type="System.Drawing.Size, System.Drawing">
     <value>73, 23</value>
@@ -154,13 +154,13 @@
     <value>True</value>
   </data>
   <data name="checkBoxSeparateDecodingThread.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 140</value>
+    <value>12, 174</value>
   </data>
   <data name="checkBoxSeparateDecodingThread.Size" type="System.Drawing.Size, System.Drawing">
     <value>168, 17</value>
   </data>
   <data name="checkBoxSeparateDecodingThread.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
+    <value>9</value>
   </data>
   <data name="checkBoxSeparateDecodingThread.Text" xml:space="preserve">
     <value>Separate thread for decoding</value>
@@ -315,6 +315,39 @@
   <data name="&gt;&gt;chkTruncateExtra4206Samples.ZOrder" xml:space="preserve">
     <value>4</value>
   </data>
+  <data name="chkCreateCUEFileInTracksMode.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="chkCreateCUEFileInTracksMode.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="chkCreateCUEFileInTracksMode.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 106</value>
+  </data>
+  <data name="chkCreateCUEFileInTracksMode.Size" type="System.Drawing.Size, System.Drawing">
+    <value>174, 17</value>
+  </data>
+  <data name="chkCreateCUEFileInTracksMode.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="chkCreateCUEFileInTracksMode.Text" xml:space="preserve">
+    <value>Create .cue file in Tracks Mode</value>
+  </data>
+  <data name="chkCreateCUEFileInTracksMode.ToolTip" xml:space="preserve">
+    <value>Option to disable writing a CUE sheet for separate tracks</value>
+  </data>
+  <data name="&gt;&gt;chkCreateCUEFileInTracksMode.Name" xml:space="preserve">
+    <value>chkCreateCUEFileInTracksMode</value>
+  </data>
+  <data name="&gt;&gt;chkCreateCUEFileInTracksMode.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;chkCreateCUEFileInTracksMode.Parent" xml:space="preserve">
+    <value>grpGeneral</value>
+  </data>
+  <data name="&gt;&gt;chkCreateCUEFileInTracksMode.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
   <data name="chkCreateCUEFileWhenEmbedded.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -322,13 +355,13 @@
     <value>NoControl</value>
   </data>
   <data name="chkCreateCUEFileWhenEmbedded.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 106</value>
+    <value>12, 123</value>
   </data>
   <data name="chkCreateCUEFileWhenEmbedded.Size" type="System.Drawing.Size, System.Drawing">
     <value>189, 17</value>
   </data>
   <data name="chkCreateCUEFileWhenEmbedded.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
+    <value>6</value>
   </data>
   <data name="chkCreateCUEFileWhenEmbedded.Text" xml:space="preserve">
     <value>Create .cue file even if embedded</value>
@@ -346,7 +379,40 @@
     <value>grpGeneral</value>
   </data>
   <data name="&gt;&gt;chkCreateCUEFileWhenEmbedded.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>6</value>
+  </data>
+  <data name="chkAlwaysWriteUTF8CUEFile.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="chkAlwaysWriteUTF8CUEFile.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="chkAlwaysWriteUTF8CUEFile.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 140</value>
+  </data>
+  <data name="chkAlwaysWriteUTF8CUEFile.Size" type="System.Drawing.Size, System.Drawing">
+    <value>172, 17</value>
+  </data>
+  <data name="chkAlwaysWriteUTF8CUEFile.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="chkAlwaysWriteUTF8CUEFile.Text" xml:space="preserve">
+    <value>Always write UTF-8 CUE sheet</value>
+  </data>
+  <data name="chkAlwaysWriteUTF8CUEFile.ToolTip" xml:space="preserve">
+    <value>Always use UTF-8 encoding for writing CUE sheets</value>
+  </data>
+  <data name="&gt;&gt;chkAlwaysWriteUTF8CUEFile.Name" xml:space="preserve">
+    <value>chkAlwaysWriteUTF8CUEFile</value>
+  </data>
+  <data name="&gt;&gt;chkAlwaysWriteUTF8CUEFile.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;chkAlwaysWriteUTF8CUEFile.Parent" xml:space="preserve">
+    <value>grpGeneral</value>
+  </data>
+  <data name="&gt;&gt;chkAlwaysWriteUTF8CUEFile.ZOrder" xml:space="preserve">
+    <value>9</value>
   </data>
   <data name="chkCreateM3U.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -379,7 +445,7 @@
     <value>grpGeneral</value>
   </data>
   <data name="&gt;&gt;chkCreateM3U.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>7</value>
   </data>
   <data name="chkAutoCorrectFilenames.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -388,13 +454,13 @@
     <value>NoControl</value>
   </data>
   <data name="chkAutoCorrectFilenames.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 123</value>
+    <value>12, 157</value>
   </data>
   <data name="chkAutoCorrectFilenames.Size" type="System.Drawing.Size, System.Drawing">
     <value>155, 17</value>
   </data>
   <data name="chkAutoCorrectFilenames.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
+    <value>8</value>
   </data>
   <data name="chkAutoCorrectFilenames.Text" xml:space="preserve">
     <value>Locate audio files if missing</value>
@@ -412,13 +478,13 @@
     <value>grpGeneral</value>
   </data>
   <data name="&gt;&gt;chkAutoCorrectFilenames.ZOrder" xml:space="preserve">
-    <value>7</value>
+    <value>8</value>
   </data>
   <data name="grpGeneral.Location" type="System.Drawing.Point, System.Drawing">
     <value>6, 6</value>
   </data>
   <data name="grpGeneral.Size" type="System.Drawing.Size, System.Drawing">
-    <value>252, 182</value>
+    <value>252, 199</value>
   </data>
   <data name="grpGeneral.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -496,7 +562,7 @@
     <value>NoControl</value>
   </data>
   <data name="btnOK.Location" type="System.Drawing.Point, System.Drawing">
-    <value>189, 320</value>
+    <value>189, 337</value>
   </data>
   <data name="btnOK.Size" type="System.Drawing.Size, System.Drawing">
     <value>73, 23</value>
@@ -1281,7 +1347,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>groupBoxGaps</value>
   </data>
   <data name="&gt;&gt;rbGapsLeftOut.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>4</value>
   </data>
   <data name="rbGapsPrepended.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -1347,6 +1413,39 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>groupBoxGaps</value>
   </data>
   <data name="&gt;&gt;rbGapsAppended.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="chkUseHTOALengthThreshold.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="chkUseHTOALengthThreshold.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="chkUseHTOALengthThreshold.Location" type="System.Drawing.Point, System.Drawing">
+    <value>165, 20</value>
+  </data>
+  <data name="chkUseHTOALengthThreshold.Size" type="System.Drawing.Size, System.Drawing">
+    <value>79, 17</value>
+  </data>
+  <data name="chkUseHTOALengthThreshold.TabIndex" type="System.Int32, mscorlib">
+    <value>17</value>
+  </data>
+  <data name="chkUseHTOALengthThreshold.Text" xml:space="preserve">
+    <value>HTOA &gt; 5s</value>
+  </data>
+  <data name="chkUseHTOALengthThreshold.ToolTip" xml:space="preserve">
+    <value>Save HTOA file only if longer than 5 seconds</value>
+  </data>
+  <data name="&gt;&gt;chkUseHTOALengthThreshold.Name" xml:space="preserve">
+    <value>chkUseHTOALengthThreshold</value>
+  </data>
+  <data name="&gt;&gt;chkUseHTOALengthThreshold.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;chkUseHTOALengthThreshold.Parent" xml:space="preserve">
+    <value>groupBoxGaps</value>
+  </data>
+  <data name="&gt;&gt;chkUseHTOALengthThreshold.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
   <data name="rbGapsPlusHTOA.AutoSize" type="System.Boolean, mscorlib">
@@ -1587,7 +1686,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>264, 6</value>
   </data>
   <data name="grpAudioFilenames.Size" type="System.Drawing.Size, System.Drawing">
-    <value>252, 195</value>
+    <value>252, 199</value>
   </data>
   <data name="grpAudioFilenames.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -1611,7 +1710,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>Top, Left, Right</value>
   </data>
   <data name="groupBoxGaps.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 193</value>
+    <value>6, 210</value>
   </data>
   <data name="groupBoxGaps.Size" type="System.Drawing.Size, System.Drawing">
     <value>250, 98</value>
@@ -1641,7 +1740,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>3, 3, 3, 3</value>
   </data>
   <data name="tabPage1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>535, 291</value>
+    <value>535, 308</value>
   </data>
   <data name="tabPage1.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -2118,7 +2217,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>4, 22</value>
   </data>
   <data name="tabPage6.Size" type="System.Drawing.Size, System.Drawing">
-    <value>535, 291</value>
+    <value>535, 308</value>
   </data>
   <data name="tabPage6.TabIndex" type="System.Int32, mscorlib">
     <value>9</value>
@@ -2574,7 +2673,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>3, 3, 3, 3</value>
   </data>
   <data name="tabPage2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>535, 291</value>
+    <value>535, 308</value>
   </data>
   <data name="tabPage2.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -2919,7 +3018,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>6, 6</value>
   </data>
   <data name="listViewFormats.Size" type="System.Drawing.Size, System.Drawing">
-    <value>124, 269</value>
+    <value>124, 272</value>
   </data>
   <data name="listViewFormats.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -2943,7 +3042,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>3, 3, 3, 3</value>
   </data>
   <data name="tabPage3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>535, 291</value>
+    <value>535, 308</value>
   </data>
   <data name="tabPage3.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -3126,7 +3225,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>0, 0</value>
   </data>
   <data name="propertyGridEncoderSettings.Size" type="System.Drawing.Size, System.Drawing">
-    <value>394, 236</value>
+    <value>394, 251</value>
   </data>
   <data name="propertyGridEncoderSettings.TabIndex" type="System.Int32, mscorlib">
     <value>31</value>
@@ -3147,10 +3246,10 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>Fill</value>
   </data>
   <data name="panel1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>132, 46</value>
+    <value>132, 48</value>
   </data>
   <data name="panel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>394, 236</value>
+    <value>394, 251</value>
   </data>
   <data name="panel1.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -3322,7 +3421,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>132, 3</value>
   </data>
   <data name="panel3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>394, 37</value>
+    <value>394, 39</value>
   </data>
   <data name="panel3.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -3346,7 +3445,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>3, 3</value>
   </data>
   <data name="listBoxEncoders.Size" type="System.Drawing.Size, System.Drawing">
-    <value>123, 279</value>
+    <value>123, 296</value>
   </data>
   <data name="listBoxEncoders.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -3373,7 +3472,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>2</value>
   </data>
   <data name="tableLayoutPanel4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>529, 285</value>
+    <value>529, 302</value>
   </data>
   <data name="tableLayoutPanel4.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -3400,7 +3499,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>3, 3, 3, 3</value>
   </data>
   <data name="tabPageEncoders.Size" type="System.Drawing.Size, System.Drawing">
-    <value>535, 291</value>
+    <value>535, 308</value>
   </data>
   <data name="tabPageEncoders.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
@@ -3565,10 +3664,10 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>Fill</value>
   </data>
   <data name="groupBoxExternalDecoder.Location" type="System.Drawing.Point, System.Drawing">
-    <value>132, 44</value>
+    <value>132, 47</value>
   </data>
   <data name="groupBoxExternalDecoder.Size" type="System.Drawing.Size, System.Drawing">
-    <value>394, 238</value>
+    <value>394, 252</value>
   </data>
   <data name="groupBoxExternalDecoder.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -3746,7 +3845,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>132, 3</value>
   </data>
   <data name="panel2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>394, 35</value>
+    <value>394, 38</value>
   </data>
   <data name="panel2.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -3770,7 +3869,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>3, 3</value>
   </data>
   <data name="listBoxDecoders.Size" type="System.Drawing.Size, System.Drawing">
-    <value>123, 279</value>
+    <value>123, 296</value>
   </data>
   <data name="listBoxDecoders.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -3797,7 +3896,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>2</value>
   </data>
   <data name="tableLayoutPanel5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>529, 285</value>
+    <value>529, 302</value>
   </data>
   <data name="tableLayoutPanel5.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -3824,7 +3923,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>3, 3, 3, 3</value>
   </data>
   <data name="tabPage11.Size" type="System.Drawing.Size, System.Drawing">
-    <value>535, 291</value>
+    <value>535, 308</value>
   </data>
   <data name="tabPage11.TabIndex" type="System.Int32, mscorlib">
     <value>7</value>
@@ -3908,7 +4007,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>3, 3, 3, 3</value>
   </data>
   <data name="tabPage4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>535, 291</value>
+    <value>535, 308</value>
   </data>
   <data name="tabPage4.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -3956,7 +4055,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>3, 3, 3, 3</value>
   </data>
   <data name="tabPage7.Size" type="System.Drawing.Size, System.Drawing">
-    <value>535, 291</value>
+    <value>535, 308</value>
   </data>
   <data name="tabPage7.TabIndex" type="System.Int32, mscorlib">
     <value>10</value>
@@ -3983,7 +4082,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>0, 0, 0, 0</value>
   </data>
   <data name="tabControl1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>543, 317</value>
+    <value>543, 334</value>
   </data>
   <data name="tabControl1.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -4085,7 +4184,7 @@ You can set up foobar2000 to show those values, and see if your music was ripped
     <value>6, 13</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>542, 355</value>
+    <value>542, 372</value>
   </data>
   <data name="$this.Font" type="System.Drawing.Font, System.Drawing">
     <value>Tahoma, 8.25pt</value>

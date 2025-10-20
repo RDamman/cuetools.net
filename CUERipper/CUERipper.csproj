@@ -189,9 +189,9 @@
       <Project>{8DD1E84B-0B03-4C0B-9B42-1E49F75E7CB1}</Project>
       <Name>ProgressODoom</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ThirdParty\taglib-sharp\src\taglib-sharp.csproj">
+    <ProjectReference Include="..\ThirdParty\taglib-sharp\src\TaglibSharp\TaglibSharp.csproj">
       <Project>{1219a514-d3fa-40db-bbb2-92ce05e35839}</Project>
-      <Name>taglib-sharp</Name>
+      <Name>TaglibSharp</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -242,26 +242,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="cue2.ico" />
-    <Content Include="Plugins %28win32%29\CUETools.Codecs.APE.dll" />
-    <Content Include="Plugins %28win32%29\CUETools.Codecs.FLAC.dll" />
-    <Content Include="Plugins %28win32%29\CUETools.Codecs.HDCD.dll" />
-    <Content Include="Plugins %28win32%29\CUETools.Codecs.TTA.dll" />
-    <Content Include="Plugins %28win32%29\CUETools.Codecs.WavPack.dll" />
-    <Content Include="Plugins %28win32%29\hdcd.dll" />
-    <Content Include="Plugins %28x64%29\CUETools.Codecs.APE.dll" />
-    <Content Include="Plugins %28x64%29\CUETools.Codecs.FLAC.dll" />
-    <Content Include="Plugins %28x64%29\CUETools.Codecs.HDCD.dll" />
-    <Content Include="Plugins %28x64%29\CUETools.Codecs.TTA.dll" />
-    <Content Include="Plugins %28x64%29\CUETools.Codecs.WavPack.dll" />
-    <Content Include="Plugins %28x64%29\hdcd.dll" />
-    <Content Include="Plugins\Bwg.Hardware.dll" />
-    <Content Include="Plugins\Bwg.Logging.dll" />
-    <Content Include="Plugins\Bwg.Scsi.dll" />
-    <Content Include="Plugins\CUDA.NET.dll" />
-    <Content Include="Plugins\CUETools.Codecs.ALAC.dll" />
-    <Content Include="Plugins\CUETools.Codecs.FlaCuda.dll" />
-    <Content Include="Plugins\CUETools.Codecs.Flake.dll" />
-    <Content Include="Plugins\CUETools.Ripper.SCSI.dll" />
+    <None Include="Resources\opus.ico" />
     <None Include="Resources\cd_eject.png" />
     <None Include="Resources\wma.ico" />
     <None Include="Resources\cog.ico" />

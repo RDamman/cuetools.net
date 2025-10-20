@@ -19,7 +19,7 @@ namespace CUETools.Codecs.libFLAC
         public static extern IntPtr GetProcAddress(IntPtr hModule, string procedureName);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate FLAC__StreamDecoderReadStatus FLAC__StreamDecoderReadCallback(IntPtr decoder, byte* buffer, ref long bytes, void* client_data);
+        internal delegate FLAC__StreamDecoderReadStatus FLAC__StreamDecoderReadCallback(IntPtr decoder, byte* buffer, ref UIntPtr bytes, void* client_data);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate FLAC__StreamDecoderSeekStatus FLAC__StreamDecoderSeekCallback(IntPtr decoder, long absolute_byte_offset, void* client_data);
@@ -138,7 +138,7 @@ namespace CUETools.Codecs.libFLAC
         internal static extern int FLAC__stream_encoder_set_blocksize(IntPtr encoder, int value);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate FLAC__StreamEncoderWriteStatus FLAC__StreamEncoderWriteCallback(IntPtr encoder, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] byte[] buffer, long bytes, int samples, int current_frame, void* client_data);
+        internal delegate FLAC__StreamEncoderWriteStatus FLAC__StreamEncoderWriteCallback(IntPtr encoder, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 2)] byte[] buffer, UIntPtr bytes, int samples, int current_frame, void* client_data);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate FLAC__StreamEncoderSeekStatus FLAC__StreamEncoderSeekCallback(IntPtr encoder, long absolute_byte_offset, void* client_data);

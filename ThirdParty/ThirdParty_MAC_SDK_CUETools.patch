@@ -1,0 +1,400 @@
+diff -ur 0_MAC_1074_SDK_orig/Source/MACLib/APECompress.cpp 1_MAC_1074_SDK_updated/Source/MACLib/APECompress.cpp
+--- 0_MAC_1074_SDK_orig/Source/MACLib/APECompress.cpp	2024-05-13 02:58:42.000000000 +0200
++++ 1_MAC_1074_SDK_updated/Source/MACLib/APECompress.cpp	2024-06-22 17:27:46.000000000 +0200
+@@ -28,6 +28,7 @@
+     m_spioOutput.Delete();
+ }
+ 
++#ifndef EXCLUDE_CIO
+ int CAPECompress::Start(const wchar_t * pOutputFilename, const WAVEFORMATEX * pwfeInput, bool bFloat, int64 nMaxAudioBytes, int nCompressionLevel, const void * pHeaderData, int64 nHeaderBytes, int nFlags)
+ {
+     m_spioOutput.Delete();
+@@ -57,6 +58,7 @@
+ 
+     return nStartResult;
+ }
++#endif
+ 
+ int CAPECompress::StartEx(CIO * pioOutput, const WAVEFORMATEX * pwfeInput, bool bFloat, int64 nMaxAudioBytes, int nCompressionLevel, const void * pHeaderData, int64 nHeaderBytes)
+ {
+diff -ur 0_MAC_1074_SDK_orig/Source/MACLib/APECompress.h 1_MAC_1074_SDK_updated/Source/MACLib/APECompress.h
+--- 0_MAC_1074_SDK_orig/Source/MACLib/APECompress.h	2024-05-13 02:58:42.000000000 +0200
++++ 1_MAC_1074_SDK_updated/Source/MACLib/APECompress.h	2024-06-22 17:18:24.000000000 +0200
+@@ -20,7 +20,9 @@
+     ~CAPECompress();
+ 
+     // start encoding
++#ifndef EXCLUDE_CIO
+     int Start(const wchar_t * pOutputFilename, const WAVEFORMATEX * pwfeInput, bool bFloat, int64 nMaxAudioBytes, int nCompressionLevel = APE_COMPRESSION_LEVEL_NORMAL, const void * pHeaderData = APE_NULL, int64 nHeaderBytes = CREATE_WAV_HEADER_ON_DECOMPRESSION, int nFlags = 0) APE_OVERRIDE;
++#endif
+     int StartEx(CIO * pioOutput, const WAVEFORMATEX * pwfeInput, bool bFloat, int64 nMaxAudioBytes, int nCompressionLevel = APE_COMPRESSION_LEVEL_NORMAL, const void * pHeaderData = APE_NULL, int64 nHeaderBytes = CREATE_WAV_HEADER_ON_DECOMPRESSION) APE_OVERRIDE;
+ 
+     // add data / compress data
+diff -ur 0_MAC_1074_SDK_orig/Source/MACLib/APEInfo.cpp 1_MAC_1074_SDK_updated/Source/MACLib/APEInfo.cpp
+--- 0_MAC_1074_SDK_orig/Source/MACLib/APEInfo.cpp	2024-05-13 02:58:42.000000000 +0200
++++ 1_MAC_1074_SDK_updated/Source/MACLib/APEInfo.cpp	2024-06-22 17:18:24.000000000 +0200
+@@ -46,6 +46,7 @@
+ {
+ }
+ 
++#ifndef EXCLUDE_CIO
+ /**************************************************************************************************
+ Construction
+ **************************************************************************************************/
+@@ -116,6 +117,7 @@
+     // update
+     CheckHeaderInformation();
+ }
++#endif
+ 
+ CAPEInfo::CAPEInfo(int * pErrorCode, CIO * pIO, CAPETag * pTag)
+ {
+diff -ur 0_MAC_1074_SDK_orig/Source/MACLib/APETag.cpp 1_MAC_1074_SDK_updated/Source/MACLib/APETag.cpp
+--- 0_MAC_1074_SDK_orig/Source/MACLib/APETag.cpp	2024-05-13 02:58:42.000000000 +0200
++++ 1_MAC_1074_SDK_updated/Source/MACLib/APETag.cpp	2024-06-22 17:18:24.000000000 +0200
+@@ -125,6 +125,7 @@
+     L"Crossover", L"Contemporary C", L"Christian Rock", L"Merengue", L"Salsa", L"Thrash Metal", L"Anime", L"JPop", L"SynthPop"
+ };
+ 
++#ifndef EXCLUDE_CIO
+ CAPETag::CAPETag(const str_utfn * pFilename, bool bAnalyze)
+ {
+     m_spIO.Assign(CreateCIO());
+@@ -144,6 +145,7 @@
+     if (bAnalyze)
+         Analyze();
+ }
++#endif
+ 
+ CAPETag::CAPETag(CIO * pIO, bool bAnalyze, bool bCheckForID3v1)
+ {
+diff -ur 0_MAC_1074_SDK_orig/Source/MACLib/MACLib.cpp 1_MAC_1074_SDK_updated/Source/MACLib/MACLib.cpp
+--- 0_MAC_1074_SDK_orig/Source/MACLib/MACLib.cpp	2024-05-13 02:58:42.000000000 +0200
++++ 1_MAC_1074_SDK_updated/Source/MACLib/MACLib.cpp	2024-06-22 17:18:24.000000000 +0200
+@@ -79,6 +79,7 @@
+     return spAPEDecompress.GetPtr();
+ }
+ 
++#ifndef EXCLUDE_CIO
+ IAPEDecompress * __stdcall CreateIAPEDecompress(const str_utfn * pFilename, int * pErrorCode, bool bReadOnly, bool bAnalyzeTagNow, bool bReadWholeFile)
+ {
+     // error check the parameters
+@@ -142,6 +143,7 @@
+     // return
+     return pAPEDecompress;
+ }
++#endif
+ 
+ IAPEDecompress * __stdcall CreateIAPEDecompressEx(CIO * pIO, int * pErrorCode)
+ {
+@@ -259,6 +261,7 @@
+     catch(...) { return ERROR_UNDEFINED; }
+ }
+ 
++#ifndef EXCLUDE_CIO
+ int __stdcall GetAPEFileType(const APE::str_utfn * pInputFilename, APE::str_ansi cFileType[8])
+ {
+     memset(&cFileType[0], 0, sizeof(cFileType[0]) * 8);
+@@ -887,3 +890,4 @@
+     // return
+     return nFunctionRetVal;
+ }
++#endif
+diff -ur 0_MAC_1074_SDK_orig/Source/MACLib/MACLib.h 1_MAC_1074_SDK_updated/Source/MACLib/MACLib.h
+--- 0_MAC_1074_SDK_orig/Source/MACLib/MACLib.h	2024-05-13 02:58:42.000000000 +0200
++++ 1_MAC_1074_SDK_updated/Source/MACLib/MACLib.h	2024-06-22 17:18:24.000000000 +0200
+@@ -382,9 +382,11 @@
+     //        on decompression)
+     //////////////////////////////////////////////////////////////////////////////////////////////
+ 
++#ifndef EXCLUDE_CIO
+     virtual int Start(const str_utfn * pOutputFilename, const WAVEFORMATEX * pwfeInput,
+         bool bFloat, int64 nMaxAudioBytes = MAX_AUDIO_BYTES_UNKNOWN, int nCompressionLevel = APE_COMPRESSION_LEVEL_NORMAL,
+         const void * pHeaderData = APE_NULL, int64 nHeaderBytes = CREATE_WAV_HEADER_ON_DECOMPRESSION, int nFlags = 0) = 0;
++#endif
+ 
+     virtual int StartEx(CIO * pioOutput, const WAVEFORMATEX * pwfeInput,
+         bool bFloat, int64 nMaxAudioBytes = MAX_AUDIO_BYTES_UNKNOWN, int nCompressionLevel = APE_COMPRESSION_LEVEL_NORMAL,
+diff -ur 0_MAC_1074_SDK_orig/Source/Projects/VS2022/MACLib/MACLib.vcxproj 1_MAC_1074_SDK_updated/Source/Projects/VS2022/MACLib/MACLib.vcxproj
+--- 0_MAC_1074_SDK_orig/Source/Projects/VS2022/MACLib/MACLib.vcxproj	2024-06-11 20:54:54.000000000 +0200
++++ 1_MAC_1074_SDK_updated/Source/Projects/VS2022/MACLib/MACLib.vcxproj	2024-06-22 17:36:44.000000000 +0200
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|ARM">
+       <Configuration>Debug</Configuration>
+@@ -45,62 +45,64 @@
+   <PropertyGroup Label="Globals">
+     <ProjectGuid>{21BF980F-C022-4DCC-9250-7C73528E422B}</ProjectGuid>
+     <RootNamespace>MACLib</RootNamespace>
+-    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
++    <!-- Latest Target Version property -->
++    <LatestTargetPlatformVersion>$([Microsoft.Build.Utilities.ToolLocationHelper]::GetLatestSDKTargetPlatformVersion('Windows', '10.0'))</LatestTargetPlatformVersion>
++    <WindowsTargetPlatformVersion Condition="'$(WindowsTargetPlatformVersion)' == ''">$(LatestTargetPlatformVersion)</WindowsTargetPlatformVersion>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+-    <PlatformToolset>v143</PlatformToolset>
++    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+-    <PlatformToolset>v143</PlatformToolset>
++    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+-    <PlatformToolset>v143</PlatformToolset>
++    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+-    <PlatformToolset>v143</PlatformToolset>
++    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+-    <PlatformToolset>v143</PlatformToolset>
++    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64EC'" Label="Configuration">
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+-    <PlatformToolset>v143</PlatformToolset>
++    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+-    <PlatformToolset>v143</PlatformToolset>
++    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+-    <PlatformToolset>v143</PlatformToolset>
++    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64EC'" Label="Configuration">
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+-    <PlatformToolset>v143</PlatformToolset>
++    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+-    <PlatformToolset>v143</PlatformToolset>
++    <PlatformToolset>$(DefaultPlatformToolset)</PlatformToolset>
+     <CharacterSet>Unicode</CharacterSet>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+@@ -141,8 +143,8 @@
+     <_ProjectFileVersion>11.0.50727.1</_ProjectFileVersion>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+-    <OutDir>$(Configuration)\</OutDir>
+-    <IntDir>$(Configuration)\</IntDir>
++    <OutDir>$(SolutionDir)ThirdParty$(Configuration)\$(Platform)\</OutDir>
++    <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+     <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
+     <ClangTidyChecks>-clang-diagnostic-c++98-compat,-clang-diagnostic-c++98-compat-pedantic,-clang-diagnostic-language-extension-token,-clang-diagnostic-unsafe-buffer-usage,-clang-diagnostic-unused-macros,-clang-diagnostic-pragma-pack</ClangTidyChecks>
+     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+@@ -155,8 +157,8 @@
+     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+-    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
++    <OutDir>$(SolutionDir)ThirdParty$(Configuration)\$(Platform)\</OutDir>
++    <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+     <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
+     <ClangTidyChecks>-clang-diagnostic-c++98-compat,-clang-diagnostic-c++98-compat-pedantic,-clang-diagnostic-language-extension-token,-clang-diagnostic-unsafe-buffer-usage,-clang-diagnostic-unused-macros,-clang-diagnostic-pragma-pack</ClangTidyChecks>
+     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+@@ -176,8 +178,8 @@
+     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+-    <OutDir>$(Configuration)\</OutDir>
+-    <IntDir>$(Configuration)\</IntDir>
++    <OutDir>$(SolutionDir)ThirdParty\$(Platform)\</OutDir>
++    <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+     <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
+     <ClangTidyChecks>-clang-diagnostic-c++98-compat,-clang-diagnostic-c++98-compat-pedantic,-clang-diagnostic-language-extension-token,-clang-diagnostic-unsafe-buffer-usage,-clang-diagnostic-unused-macros,-clang-diagnostic-pragma-pack</ClangTidyChecks>
+     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+@@ -190,8 +192,8 @@
+     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+-    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
++    <OutDir>$(SolutionDir)ThirdParty\$(Platform)\</OutDir>
++    <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+     <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
+     <ClangTidyChecks>-clang-diagnostic-c++98-compat,-clang-diagnostic-c++98-compat-pedantic,-clang-diagnostic-language-extension-token,-clang-diagnostic-unsafe-buffer-usage,-clang-diagnostic-unused-macros,-clang-diagnostic-pragma-pack</ClangTidyChecks>
+     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+@@ -214,9 +216,9 @@
+     <ClCompile>
+       <Optimization>Disabled</Optimization>
+       <AdditionalIncludeDirectories>..\..\..\MACLib;..\..\..\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>PLATFORM_WINDOWS;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <PreprocessorDefinitions>EXCLUDE_CIO;PLATFORM_WINDOWS;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
++      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+       <WarningLevel>EnableAllWarnings</WarningLevel>
+       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+     </ClCompile>
+@@ -236,9 +238,9 @@
+     <ClCompile>
+       <Optimization>Disabled</Optimization>
+       <AdditionalIncludeDirectories>..\..\..\MACLib;..\..\..\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>PLATFORM_WINDOWS;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <PreprocessorDefinitions>EXCLUDE_CIO;PLATFORM_WINDOWS;WIN32;_DEBUG;_LIB;PLATFORM_x64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
++      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+       <WarningLevel>EnableAllWarnings</WarningLevel>
+       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+     </ClCompile>
+@@ -273,8 +275,8 @@
+       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+       <OmitFramePointers>true</OmitFramePointers>
+       <AdditionalIncludeDirectories>..\..\..\MACLib;..\..\..\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>PLATFORM_WINDOWS;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
++      <PreprocessorDefinitions>EXCLUDE_CIO;_CRT_SECURE_NO_WARNINGS;PLATFORM_WINDOWS;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+       <BufferSecurityCheck>false</BufferSecurityCheck>
+       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+       <WarningLevel>EnableAllWarnings</WarningLevel>
+@@ -304,8 +306,8 @@
+       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+       <OmitFramePointers>true</OmitFramePointers>
+       <AdditionalIncludeDirectories>..\..\..\MACLib;..\..\..\Shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+-      <PreprocessorDefinitions>PLATFORM_WINDOWS;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
++      <PreprocessorDefinitions>EXCLUDE_CIO;_CRT_SECURE_NO_WARNINGS;PLATFORM_WINDOWS;WIN32;NDEBUG;_LIB;PLATFORM_x64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
++      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+       <BufferSecurityCheck>false</BufferSecurityCheck>
+       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+       <WarningLevel>EnableAllWarnings</WarningLevel>
+@@ -368,19 +370,44 @@
+     <ClCompile Include="..\..\..\MACLib\UnBitArrayBase.cpp" />
+     <ClCompile Include="..\..\..\MACLib\APEHeader.cpp" />
+     <ClCompile Include="..\..\..\MACLib\APEInfo.cpp" />
+-    <ClCompile Include="..\..\..\MACLib\APELink.cpp" />
++    <ClCompile Include="..\..\..\MACLib\APELink.cpp">
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
++    </ClCompile>
+     <ClCompile Include="..\..\..\MACLib\APETag.cpp" />
+-    <ClCompile Include="..\..\..\MACLib\WAVInputSource.cpp" />
++    <ClCompile Include="..\..\..\MACLib\WAVInputSource.cpp">
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
++    </ClCompile>
+     <ClCompile Include="..\..\..\Shared\CharacterHelper.cpp" />
+     <ClCompile Include="..\..\..\Shared\CircleBuffer.cpp" />
+     <ClCompile Include="..\..\..\Shared\CPUFeatures.cpp" />
+     <ClCompile Include="..\..\..\Shared\CRC.cpp" />
+     <ClCompile Include="..\..\..\Shared\GlobalFunctions.cpp" />
+-    <ClCompile Include="..\..\..\MACLib\MACProgressHelper.cpp" />
++    <ClCompile Include="..\..\..\MACLib\MACProgressHelper.cpp">
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
++    </ClCompile>
+     <ClCompile Include="..\..\..\MACLib\MD5.cpp" />
+     <ClCompile Include="..\..\..\MACLib\Prepare.cpp" />
+-    <ClCompile Include="..\..\..\Shared\StdLibFileIO.cpp" />
+-    <ClCompile Include="..\..\..\Shared\WinFileIO.cpp" />
++    <ClCompile Include="..\..\..\Shared\StdLibFileIO.cpp">
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
++    </ClCompile>
++    <ClCompile Include="..\..\..\Shared\WinFileIO.cpp">
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
++      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
++    </ClCompile>
+     <ClCompile Include="..\..\..\MACLib\NewPredictor.cpp" />
+     <ClCompile Include="..\..\..\MACLib\NNFilter.cpp" />
+     <ClCompile Include="..\..\..\Shared\BufferIO.cpp" />
+diff -ur 0_MAC_1074_SDK_orig/Source/Shared/All.h 1_MAC_1074_SDK_updated/Source/Shared/All.h
+--- 0_MAC_1074_SDK_orig/Source/Shared/All.h	2024-05-13 02:58:40.000000000 +0200
++++ 1_MAC_1074_SDK_updated/Source/Shared/All.h	2024-06-22 17:18:24.000000000 +0200
+@@ -62,7 +62,21 @@
+     #ifdef _MSC_VER
+         #pragma warning(push) // push and pop warnings because the windows includes suppresses some like 4514
+     #endif
++#if defined(PLATFORM_WINDOWS_NO_HEADER)
++    #define NEAR
++    #define FAR
++    #define MAX_PATH    4096
++    #define BOOL int
++    #define TRUE 1
++    #define FALSE 0
++    #define HWND long
++    typedef void * HANDLE;
++    #include <IntSafe.h>
++    #include <string.h>
++    #define ZeroMemory(p,l) memset((p), 0, (l))
++#else
+     #include <Windows.h>
++#endif
+     #ifdef _MSC_VER
+         #pragma warning(pop)
+     #endif
+@@ -191,8 +205,12 @@
+ #if defined(PLATFORM_WINDOWS)
+     #define IO_USE_WIN_FILE_IO
+     #define DLLEXPORT                                   __declspec(dllexport)
++#if defined(PLATFORM_WINDOWS_NO_HEADER)
++    #define SLEEP(MILLISECONDS)
++#else
+     #define SLEEP(MILLISECONDS)                         ::Sleep(MILLISECONDS)
+     #define MESSAGEBOX(PARENT, TEXT, CAPTION, TYPE)     ::MessageBox(PARENT, TEXT, CAPTION, TYPE)
++#endif
+     #define APE_ODS                                     OutputDebugString
+     #define TICK_COUNT_TYPE                             unsigned long long
+     #if _WIN32_WINNT >= 0x600
+diff -ur 0_MAC_1074_SDK_orig/Source/Shared/GlobalFunctions.cpp 1_MAC_1074_SDK_updated/Source/Shared/GlobalFunctions.cpp
+--- 0_MAC_1074_SDK_orig/Source/Shared/GlobalFunctions.cpp	2024-05-13 02:58:40.000000000 +0200
++++ 1_MAC_1074_SDK_updated/Source/Shared/GlobalFunctions.cpp	2024-06-22 17:30:30.000000000 +0200
+@@ -44,6 +44,7 @@
+     return nResult;
+ }
+ 
++#ifndef EXCLUDE_CIO
+ bool FileExists(const wchar_t * pFilename)
+ {
+     if (pFilename == APE_NULL)
+@@ -85,6 +86,7 @@
+ 
+ #endif
+ }
++#endif
+ 
+ void * AllocateAligned(intn nBytes, intn nAlignment)
+ {

@@ -28,8 +28,9 @@ namespace CUETools.Processor
         public bool autoCorrectFilenames;
         public bool detectGaps;
         public bool preserveHTOA;
+        public bool useHTOALengthThreshold;
         public bool ejectAfterRip;
-        public bool disableEjectDrive;
+        public bool disableEjectDisc;
         public bool keepOriginalFilenames;
         public string trackFilenameFormat;
         public string singleFilenameFormat;
@@ -38,6 +39,8 @@ namespace CUETools.Processor
         public bool replaceSpaces;
         public bool embedLog;
         public bool extractLog;
+        public bool alwaysWriteUTF8CUEFile;
+        public bool writeUTF8BOM;
         public bool fillUpCUE;
         public bool overwriteCUEData;
         public bool filenamesANSISafe;
@@ -47,6 +50,7 @@ namespace CUETools.Processor
         public bool decodeHDCD;
         public bool wait750FramesForHDCD;
         public bool createM3U;
+        public bool createCUEFileInTracksMode;
         public bool createCUEFileWhenEmbedded;
         public bool truncate4608ExtraSamples;
         public bool decodeHDCDtoLW16;
@@ -94,8 +98,9 @@ namespace CUETools.Processor
 
             autoCorrectFilenames = true;
             preserveHTOA = true;
-            ejectAfterRip = true;
-            disableEjectDrive = false;
+            useHTOALengthThreshold = true;
+            ejectAfterRip = false;
+            disableEjectDisc = false;
             detectGaps = true;
             keepOriginalFilenames = false;
             trackFilenameFormat = "%tracknumber%. %title%";
@@ -105,6 +110,8 @@ namespace CUETools.Processor
             replaceSpaces = false;
             embedLog = true;
             extractLog = true;
+            alwaysWriteUTF8CUEFile = false;
+            writeUTF8BOM = true;
             fillUpCUE = true;
             overwriteCUEData = false;
             filenamesANSISafe = true;
@@ -114,6 +121,7 @@ namespace CUETools.Processor
             wait750FramesForHDCD = true;
             decodeHDCD = false;
             createM3U = false;
+            createCUEFileInTracksMode = true;
             createCUEFileWhenEmbedded = true;
             truncate4608ExtraSamples = true;
             decodeHDCDtoLW16 = false;
@@ -150,6 +158,8 @@ namespace CUETools.Processor
                 new CUEAction[] { CUEAction.Verify, CUEAction.Encode }));
             scripts.Add("only if found", new CUEToolsScript("only if found",
                 new CUEAction[] { CUEAction.Verify }));
+            scripts.Add("only if rip log present", new CUEToolsScript("only if rip log present",
+                new CUEAction[] { CUEAction.Verify }));
             scripts.Add("fix offset", new CUEToolsScript("fix offset",
                 new CUEAction[] { CUEAction.Encode }));
             scripts.Add("encode if verified", new CUEToolsScript("encode if verified",
@@ -176,8 +186,9 @@ namespace CUETools.Processor
 
             autoCorrectFilenames = src.autoCorrectFilenames;
             preserveHTOA = src.preserveHTOA;
+            useHTOALengthThreshold = src.useHTOALengthThreshold;
             ejectAfterRip = src.ejectAfterRip;
-            disableEjectDrive = src.disableEjectDrive;
+            disableEjectDisc = src.disableEjectDisc;
             detectGaps = src.detectGaps;
             keepOriginalFilenames = src.keepOriginalFilenames;
             trackFilenameFormat = src.trackFilenameFormat;
@@ -187,6 +198,8 @@ namespace CUETools.Processor
             replaceSpaces = src.replaceSpaces;
             embedLog = src.embedLog;
             extractLog = src.extractLog;
+            alwaysWriteUTF8CUEFile = src.alwaysWriteUTF8CUEFile;
+            writeUTF8BOM = src.writeUTF8BOM;
             fillUpCUE = src.fillUpCUE;
             overwriteCUEData = src.overwriteCUEData;
             filenamesANSISafe = src.filenamesANSISafe;
@@ -196,6 +209,7 @@ namespace CUETools.Processor
             wait750FramesForHDCD = src.wait750FramesForHDCD;
             decodeHDCD = src.decodeHDCD;
             createM3U = src.createM3U;
+            createCUEFileInTracksMode = src.createCUEFileInTracksMode;
             createCUEFileWhenEmbedded = src.createCUEFileWhenEmbedded;
             truncate4608ExtraSamples = src.truncate4608ExtraSamples;
             decodeHDCDtoLW16 = src.decodeHDCDtoLW16;
@@ -231,6 +245,8 @@ namespace CUETools.Processor
                 new CUEAction[] { CUEAction.Verify, CUEAction.Encode }));
             scripts.Add("only if found", new CUEToolsScript("only if found",
                 new CUEAction[] { CUEAction.Verify }));
+            scripts.Add("only if rip log present", new CUEToolsScript("only if rip log present",
+                new CUEAction[] { CUEAction.Verify }));
             scripts.Add("fix offset", new CUEToolsScript("fix offset",
                 new CUEAction[] { CUEAction.Encode }));
             scripts.Add("encode if verified", new CUEToolsScript("encode if verified",
@@ -244,7 +260,7 @@ namespace CUETools.Processor
 
         public void Save(SettingsWriter sw)
         {
-            sw.Save("Version", 204);
+            sw.Save("Version", 226);
             sw.Save("ArFixWhenConfidence", fixOffsetMinimumConfidence);
             sw.Save("ArFixWhenPercent", fixOffsetMinimumTracksPercent);
             sw.Save("ArEncodeWhenConfidence", encodeWhenConfidence);
@@ -258,8 +274,9 @@ namespace CUETools.Processor
             sw.Save("ArWriteLogOnVerify", writeArLogOnVerify);
 
             sw.Save("PreserveHTOA", preserveHTOA);
+            sw.Save("UseHTOALengthThreshold", useHTOALengthThreshold);
             sw.Save("EjectAfterRip", ejectAfterRip);
-            sw.Save("DisableEjectButtonDrive", disableEjectDrive);
+            sw.Save("DisableEjectDisc", disableEjectDisc);
             sw.Save("DetectGaps", detectGaps);            
             sw.Save("AutoCorrectFilenames", autoCorrectFilenames);
             sw.Save("KeepOriginalFilenames", keepOriginalFilenames);
@@ -270,6 +287,8 @@ namespace CUETools.Processor
             sw.Save("ReplaceSpaces", replaceSpaces);
             sw.Save("EmbedLog", embedLog);
             sw.Save("ExtractLog", extractLog);
+            sw.Save("AlwaysWriteUTF8CUEFile", alwaysWriteUTF8CUEFile);
+            sw.Save("WriteUTF8BOM", writeUTF8BOM);
             sw.Save("FillUpCUE", fillUpCUE);
             sw.Save("OverwriteCUEData", overwriteCUEData);
             sw.Save("FilenamesANSISafe", filenamesANSISafe);
@@ -279,6 +298,7 @@ namespace CUETools.Processor
             sw.Save("Wait750FramesForHDCD", wait750FramesForHDCD);
             sw.Save("DecodeHDCD", decodeHDCD);
             sw.Save("CreateM3U", createM3U);
+            sw.Save("CreateCUEFileInTracksMode", createCUEFileInTracksMode);
             sw.Save("CreateCUEFileWhenEmbedded", createCUEFileWhenEmbedded);
             sw.Save("Truncate4608ExtraSamples", truncate4608ExtraSamples);
             sw.Save("DecodeHDCDToLossyWAV16", decodeHDCDtoLW16);
@@ -361,8 +381,9 @@ namespace CUETools.Processor
             writeArLogOnVerify = sr.LoadBoolean("ArWriteLogOnVerify") ?? false;
 
             preserveHTOA = sr.LoadBoolean("PreserveHTOA") ?? true;
-            ejectAfterRip = sr.LoadBoolean("EjectAfterRip") ?? true;
-            disableEjectDrive = sr.LoadBoolean("DisableEjectButtonDrive") ?? false;
+            useHTOALengthThreshold = sr.LoadBoolean("UseHTOALengthThreshold") ?? true;
+            ejectAfterRip = sr.LoadBoolean("EjectAfterRip") ?? false;
+            disableEjectDisc = sr.LoadBoolean("DisableEjectDisc") ?? false;
             detectGaps = sr.LoadBoolean("DetectGaps") ?? true;
             autoCorrectFilenames = sr.LoadBoolean("AutoCorrectFilenames") ?? true;
             keepOriginalFilenames = sr.LoadBoolean("KeepOriginalFilenames") ?? false;
@@ -373,6 +394,8 @@ namespace CUETools.Processor
             replaceSpaces = sr.LoadBoolean("ReplaceSpaces") ?? false;
             embedLog = sr.LoadBoolean("EmbedLog") ?? true;
             extractLog = sr.LoadBoolean("ExtractLog") ?? true;
+            alwaysWriteUTF8CUEFile = sr.LoadBoolean("AlwaysWriteUTF8CUEFile") ?? false;
+            writeUTF8BOM = sr.LoadBoolean("WriteUTF8BOM") ?? true;
             fillUpCUE = sr.LoadBoolean("FillUpCUE") ?? true;
             overwriteCUEData = sr.LoadBoolean("OverwriteCUEData") ?? false;
             filenamesANSISafe = sr.LoadBoolean("FilenamesANSISafe") ?? true;
@@ -382,6 +405,7 @@ namespace CUETools.Processor
             wait750FramesForHDCD = sr.LoadBoolean("Wait750FramesForHDCD") ?? true;
             decodeHDCD = sr.LoadBoolean("DecodeHDCD") ?? false;
             createM3U = sr.LoadBoolean("CreateM3U") ?? false;
+            createCUEFileInTracksMode = sr.LoadBoolean("CreateCUEFileInTracksMode") ?? true;
             createCUEFileWhenEmbedded = sr.LoadBoolean("CreateCUEFileWhenEmbedded") ?? true;
             truncate4608ExtraSamples = sr.LoadBoolean("Truncate4608ExtraSamples") ?? true;
             decodeHDCDtoLW16 = sr.LoadBoolean("DecodeHDCDToLossyWAV16") ?? false;
@@ -440,9 +464,9 @@ namespace CUETools.Processor
                     advanced.decodersViewModel = new DecoderListViewModel(advanced.decoders);
 
                     // Reset the links in formats
-                    foreach (var extension in formats.Keys)
+                    foreach (var extension in backup.formats.Keys)
                     {
-                        var format = formats[extension];
+                        var format = backup.formats[extension];
                         AudioEncoderSettingsViewModel encoderLossless, encoderLossy;
                         AudioDecoderSettingsViewModel decoder;
                         if (format.encoderLossless == null || !Encoders.TryGetValue(extension, true, format.encoderLossless.Name, out encoderLossless))
@@ -454,6 +478,7 @@ namespace CUETools.Processor
                         format.encoderLossless = encoderLossless;
                         format.encoderLossy = encoderLossy;
                         format.decoder = decoder;
+                        advanced.formats.Add(extension, format);
                     }
                 }
                 catch (Exception ex)

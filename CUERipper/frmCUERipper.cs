@@ -63,6 +63,7 @@ namespace CUERipper
 			m_icon_mgr.SetExtensionIcon(".mp3", Properties.Resources.mp3);
 			m_icon_mgr.SetExtensionIcon(".m4a", Properties.Resources.ipod_sound);
 			m_icon_mgr.SetExtensionIcon(".ogg", Properties.Resources.ogg);
+			m_icon_mgr.SetExtensionIcon(".opus", Properties.Resources.opus);
             m_icon_mgr.SetExtensionIcon(".wma", Properties.Resources.wma);
 		}
 
@@ -178,6 +179,8 @@ namespace CUERipper
             initDone = true;
             bnComboBoxDrives.ImageList = m_icon_mgr.ImageList;
             bnComboBoxFormat.ImageList = m_icon_mgr.ImageList;
+            bnComboBoxC2ErrorModeSetting.DataSource = Enum.GetValues(typeof(CUETools.Ripper.DriveC2ErrorModeSetting));
+            bnComboBoxC2ErrorModeSetting.SelectedIndex = (int)DriveC2ErrorModeSetting.Auto;
 
             SetupControls();
 
@@ -188,6 +191,10 @@ namespace CUERipper
 				bnComboBoxOutputFormat.Items.Add(sr.Load(string.Format("OutputPathUseTemplate{0}", iFormat)) ?? "");
 
 			bnComboBoxOutputFormat.Text = sr.Load("PathFormat") ?? "%music%\\%artist%\\[%year% - ]%album%\\%artist% - %album%.cue";
+			if (!bnComboBoxOutputFormat.Text.EndsWith(".cue", StringComparison.InvariantCultureIgnoreCase))
+			{
+				bnComboBoxOutputFormat.Text = bnComboBoxOutputFormat.Text + ".cue";
+			}
 			SelectedOutputAudioType = (AudioEncoderType?)sr.LoadInt32("OutputAudioType", null, null) ?? AudioEncoderType.Lossless;
 			bnComboBoxImage.SelectedIndex = sr.LoadInt32("ComboImage", 0, bnComboBoxImage.Items.Count - 1) ?? 0;
 			trackBarSecureMode.Value = sr.LoadInt32("SecureMode", 0, trackBarSecureMode.Maximum - 1) ?? 1;
@@ -349,6 +356,41 @@ namespace CUERipper
 						reader.DriveOffset = driveOffset;
 					else
 						reader.DriveOffset = 0;
+
+					if (cueRipperConfig.DriveC2ErrorModes.ContainsKey(reader.ARName))
+					{
+						reader.DriveC2ErrorMode = cueRipperConfig.DriveC2ErrorModes[reader.ARName];
+						if (reader.DriveC2ErrorMode < 0 || reader.DriveC2ErrorMode > 3)
+						{
+							// Invalid setting, use 3 (Auto)
+							reader.DriveC2ErrorMode = 3;
+				}
+					}
+					else
+					{
+						reader.DriveC2ErrorMode = 3; // 0 (None), 1 (Mode294), 2 (Mode296), 3 (Auto)
+					}
+					cueRipperConfig.DriveC2ErrorModes[reader.ARName] = reader.DriveC2ErrorMode;
+
+					int readCDCommand;
+					if (cueRipperConfig.ReadCDCommands.ContainsKey(reader.ARName))
+					{
+						readCDCommand = cueRipperConfig.ReadCDCommands[reader.ARName];
+						if (readCDCommand == 0)
+							reader.ForceBE = true;
+						else if (readCDCommand == 1)
+							reader.ForceD8 = true;
+						else if (readCDCommand < 0 || readCDCommand > 2)
+						{
+							// Invalid setting, use 2 (Unknown)
+							readCDCommand = 2;
+						}
+					}
+					else
+					{
+						readCDCommand = 2; // 0 (ReadCdBEh), 1 (ReadCdD8h), 2 (Unknown/AutoDetect)
+					}
+					cueRipperConfig.ReadCDCommands[reader.ARName] = readCDCommand;
 				}
 				data.Drives.Add(new DriveInfo(m_icon_mgr, drive + ":\\", reader));
 			}
@@ -495,13 +537,13 @@ namespace CUERipper
 
 			audioSource.ReadProgress += new EventHandler<ReadProgressArgs>(CDReadProgress);
 			audioSource.DriveOffset = (int)numericWriteOffset.Value;
-			bool bDisableEjectDrive = _config.disableEjectDrive;
+			bool bDisableEjectDisc = _config.disableEjectDisc;
 			try
 			{
-				if (bDisableEjectDrive)
+				if (bDisableEjectDisc)
 				this.Invoke((MethodInvoker)delegate ()
 				{
-					audioSource.DisableEjectDrive(true);
+					audioSource.DisableEjectDisc(true);
 				});
                 if (this.testAndCopy)
                     cueSheet.TestBeforeCopy();
@@ -525,10 +567,10 @@ namespace CUERipper
 				}
 				this.Invoke((MethodInvoker)delegate()
 				{
-					if (bDisableEjectDrive)
+					if (bDisableEjectDisc)
 					{
-						audioSource.DisableEjectDrive(false);
-						bDisableEjectDrive = false;
+						audioSource.DisableEjectDisc(false);
+						bDisableEjectDisc = false;
 					}
 					if (_config.ejectAfterRip)
 						audioSource.EjectDisk();
@@ -555,10 +597,10 @@ namespace CUERipper
 //#endif
 			finally
 			{
-				if (bDisableEjectDrive)
+				if (bDisableEjectDisc)
 					this.Invoke((MethodInvoker)delegate ()
 					{
-					audioSource.DisableEjectDrive(false);
+					audioSource.DisableEjectDisc(false);
 					});
 			}
 
@@ -615,8 +657,15 @@ namespace CUERipper
                     var ms = new MemoryStream();
                     try
                     {
+                        toolStripStatusLabel1.Text = Properties.Resources.DownloadingAlbumArt;
                         if (cueSheet.CTDB.FetchFile(albumArt[currentAlbumArt].meta.uri, ms))
+                        {
+                            if (ms.Length < 0xffffff || !_config.embedAlbumArt)
                             albumArt[currentAlbumArt].contents = ms.ToArray();
+                            else
+                                MessageBox.Show(this, String.Format(Properties.Resources.AlbumArtTooLargeMessage, ms.Length),
+                                Properties.Resources.AlbumArtTooLargeTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
                     } catch (Exception)
                     {
                     }
@@ -821,7 +870,7 @@ namespace CUERipper
 
 		private CUEMetadataEntry CreateCUESheet(ICDRipper audioSource)
 		{
-			CUEMetadataEntry entry = new CUEMetadataEntry(audioSource.TOC, "local");
+			CUEMetadataEntry entry = new CUEMetadataEntry(audioSource.TOC, "blank");
 			entry.metadata.Artist = "Unknown Artist";
 			entry.metadata.Title = "Unknown Title";
 			for (int i = 0; i < entry.TOC.AudioTracks; i++)
@@ -909,7 +958,17 @@ namespace CUERipper
                 m_freedb.Hostname = _config.advanced.FreedbDomain;
                 m_freedb.ClientName = "CUERipper";
                 m_freedb.Version = CUESheet.CUEToolsVersion;
-                m_freedb.SetDefaultSiteAddress(Properties.Settings.Default.MAIN_FREEDB_SITEADDRESS);
+                try
+                {
+                    m_freedb.SetDefaultSiteAddress(_config.advanced.FreedbSiteAddress);
+                }
+                catch (Exception ex)
+                {
+                    this.Invoke((MethodInvoker)delegate()
+                    {
+                        MessageBox.Show(this, ex.Message, "FreedbHelper.SetDefaultSiteAddress", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    });
+                }
 
                 QueryResult queryResult;
                 QueryResultCollection coll;
@@ -966,10 +1025,9 @@ namespace CUERipper
                 }
             }
 
-            if (data.Releases.Count == 0)
-            {
+            // Add a blank Release to the metadata selection drop-down list in any case. It can be used, if the metadata retrieved is not correct or undesired.
                 data.Releases.Add(CreateCUESheet(audioSource));
-            }
+
             _workThread = null;
             if (musicbrainzError != "")
                 musicbrainzError = musicbrainzError + ": ";
@@ -1036,6 +1094,7 @@ namespace CUERipper
 			}
 
             numericWriteOffset.Value = selectedDriveInfo.drive.DriveOffset;
+            bnComboBoxC2ErrorModeSetting.SelectedItem = (DriveC2ErrorModeSetting)selectedDriveInfo.drive.DriveC2ErrorMode;
 			try
 			{
 				selectedDriveInfo.drive.Open(selectedDriveInfo.drive.Path[0]);
@@ -1091,7 +1150,7 @@ namespace CUERipper
 		{
 			if (data.selectedRelease == null) return;
 			if (e.Label != null && selectedDriveInfo.drive.TOC[e.Item + 1].IsAudio)
-				data.selectedRelease.metadata.Tracks[e.Item].Title = e.Label;
+				data.selectedRelease.metadata.Tracks[e.Item + 1 - selectedDriveInfo.drive.TOC.FirstAudio].Title = e.Label;
 			else
 				e.CancelEdit = true;
 		}
@@ -1221,6 +1280,9 @@ namespace CUERipper
             }
 
 			sw.Close();
+			// Save current metadata
+			if (data.selectedRelease != null)
+				data.selectedRelease.metadata.Save();
 		}
 
 		private void datagridviewTracks_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
@@ -1459,6 +1521,15 @@ namespace CUERipper
 			UpdateOutputPath();
 		}
 
+		private void bnComboBoxOutputFormat_Validating(object sender, CancelEventArgs e)
+		{
+			if (!bnComboBoxOutputFormat.Text.EndsWith(".cue", StringComparison.InvariantCultureIgnoreCase))
+			{
+				bnComboBoxOutputFormat.Text = bnComboBoxOutputFormat.Text + ".cue";
+			}
+			UpdateOutputPath();
+		}
+
 		private void txtOutputPath_Enter(object sender, EventArgs e)
 		{
 			if (outputFormatVisible)
@@ -1650,6 +1721,7 @@ namespace CUERipper
 			frm.Data.User = _config.advanced.FreedbUser;
 			frm.Data.Domain = _config.advanced.FreedbDomain;
 			frm.Data.Category = "misc";
+			frm.Data.SiteAddress = _config.advanced.FreedbSiteAddress;
 
 			DialogResult dlgRes = DialogResult.Cancel;
 			this.Invoke((MethodInvoker)delegate() { dlgRes = frm.ShowDialog(); });
@@ -1670,6 +1742,17 @@ namespace CUERipper
 			m_freedb.Hostname = _config.advanced.FreedbDomain;
 			m_freedb.ClientName = "CUERipper";
 			m_freedb.Version = CUESheet.CUEToolsVersion;
+			try
+			{
+				m_freedb.SetDefaultSiteAddress(_config.advanced.FreedbSiteAddress);
+			}
+			catch (Exception ex)
+			{
+				this.Invoke((MethodInvoker)delegate()
+				{
+					MessageBox.Show(this, ex.Message, "FreedbHelper.SetDefaultSiteAddress", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				});
+			}
 			//try
 			//{
 			//    string code = m_freedb.GetCategories(out tmp);
@@ -1918,38 +2001,46 @@ namespace CUERipper
         {
 			if (selectedDriveInfo != null)
 			{
-				selectedDriveInfo.drive.DisableEjectDrive(false);
+				selectedDriveInfo.drive.DisableEjectDisc(false);
 				selectedDriveInfo.drive.EjectDisk();
 			}
+			// Save current metadata before clearing
+			if (data.selectedRelease != null)
+				data.selectedRelease.metadata.Save();
 			UpdateDrive();
 		}
 
-		private void listMetadata_KeyDown(object sender, KeyEventArgs e)
-		{
-			if (e.KeyCode == Keys.F2)
-			{
-				listMetadata.FocusedItem.BeginEdit();
-			}
-		}
+        private void bnComboBoxC2ErrorModeSetting_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if (selectedDriveInfo != null && selectedDriveInfo.drive.ARName != null)
+            {
+                cueRipperConfig.DriveC2ErrorModes[selectedDriveInfo.drive.ARName] = (int)bnComboBoxC2ErrorModeSetting.SelectedItem;
+                selectedDriveInfo.drive.DriveC2ErrorMode = (int)bnComboBoxC2ErrorModeSetting.SelectedItem;
+            }
+        }
 
+        private void listMetadata_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F2)
+            {
+                listMetadata.FocusedItem.BeginEdit();
+            }
+        }
 
-		private void listMetadata_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-		{
-			if (e.KeyCode == Keys.Enter)
-			{
-				ListViewItem listViewItem = listMetadata.FocusedItem;
-				if ((listViewItem != null) && (listViewItem.Index + 1 < listMetadata.Items.Count))// && e.Label != null)
-				{
-					listViewItem.Selected = false;
-					listViewItem = listMetadata.Items[listViewItem.Index + 1];
-					listViewItem.Focused = true;
-					listViewItem.Selected = true;
-//					listViewItem.EnsureVisible();
-					listViewItem.BeginEdit();
-				}
-			}
-		}
-	}
+        private void listMetadata_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (listMetadata.FocusedItem != null && listMetadata.FocusedItem.Index + 1 < listMetadata.Items.Count)// && e.Label != null)
+                {
+                    listMetadata.FocusedItem.Selected = false;
+                    listMetadata.FocusedItem = listMetadata.Items[listMetadata.FocusedItem.Index + 1];
+                    listMetadata.FocusedItem.Selected = true;
+                    listMetadata.FocusedItem.BeginEdit();
+                }
+            }
+        }
+    }
 
 	internal class BackgroundWorkerArtworkArgs
     {

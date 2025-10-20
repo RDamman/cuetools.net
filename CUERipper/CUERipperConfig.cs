@@ -83,6 +83,8 @@ namespace CUERipper
             }
 
             this.DriveOffsets = new SerializableDictionary<string, int>();
+            this.DriveC2ErrorModes = new SerializableDictionary<string, int>();
+            this.ReadCDCommands = new SerializableDictionary<string, int>();
         }
 
         internal static XmlSerializer serializer = new XmlSerializer(typeof(CUERipperConfig));
@@ -99,5 +101,12 @@ namespace CUERipper
         public string DefaultDrive { get; set; }
 
         public SerializableDictionary<string, int> DriveOffsets { get; set; }
+
+        // 0 (None), 1 (Mode294), 2 (Mode296), 3 (Auto)
+        public SerializableDictionary<string, int> DriveC2ErrorModes { get; set; }
+
+        // 0 (ReadCdBEh), 1 (ReadCdD8h), 2 (Unknown/AutoDetect)
+        public SerializableDictionary<string, int> ReadCDCommands { get; set; }
+
     }
 }

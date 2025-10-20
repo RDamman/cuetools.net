@@ -25,29 +25,6 @@ namespace CUETools.Codecs.ffmpegdll
 
     public unsafe class AudioDecoder : IAudioSource, IDisposable
     {
-        private static void RegisterLibrariesSearchPath(string path)
-        {
-            switch (Environment.OSVersion.Platform)
-            {
-                case PlatformID.Win32NT:
-                case PlatformID.Win32S:
-                case PlatformID.Win32Windows:
-                    SetDllDirectory(path);
-                    break;
-                    //case PlatformID.Unix:
-                    //case PlatformID.MacOSX:
-                    //    string currentValue = Environment.GetEnvironmentVariable(LD_LIBRARY_PATH);
-                    //    if (string.IsNullOrWhiteSpace(currentValue) == false && currentValue.Contains(path) == false)
-                    //    {
-                    //        string newValue = currentValue + Path.PathSeparator + path;
-                    //        Environment.SetEnvironmentVariable(LD_LIBRARY_PATH, newValue);
-                    //    }
-                    //    break;
-            }
-        }
-
-        [DllImport("kernel32", SetLastError = true)]
-        private static extern bool SetDllDirectory(string lpPathName);
 
         public AudioDecoder(DecoderSettings settings, string path, Stream IO)
         {
@@ -57,31 +34,19 @@ namespace CUETools.Codecs.ffmpegdll
 
             m_stream = (IO != null) ? IO : new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-            switch (Environment.OSVersion.Platform)
+            var myPath = new Uri(typeof(AudioDecoder).Assembly.CodeBase).LocalPath;
+            var current = System.IO.Path.GetDirectoryName(myPath);
+            var probe = Environment.Is64BitProcess ? "x64" : "win32";
+            while (current != null)
             {
-                case PlatformID.Win32NT:
-                case PlatformID.Win32S:
-                case PlatformID.Win32Windows:
-                    var myPath = new Uri(typeof(AudioDecoder).Assembly.CodeBase).LocalPath;
-                    var current = System.IO.Path.GetDirectoryName(myPath);
-                    var probe = Environment.Is64BitProcess ? "x64" : "win32";
-                    while (current != null)
-                    {
-                        var ffmpegDirectory = System.IO.Path.Combine(current, probe);
-                        if (Directory.Exists(ffmpegDirectory))
-                        {
-                            System.Diagnostics.Trace.WriteLine($"FFmpeg binaries found in: {ffmpegDirectory}");
-                            RegisterLibrariesSearchPath(ffmpegDirectory);
-                            break;
-                        }
-                        current = Directory.GetParent(current)?.FullName;
-                    }
+                var ffmpegBinaryPath = System.IO.Path.Combine(current, probe);
+                if (Directory.Exists(ffmpegBinaryPath))
+                {
+                    System.Diagnostics.Trace.WriteLine($"FFmpeg binaries found in: {ffmpegBinaryPath}");
+                    ffmpeg.RootPath = ffmpegBinaryPath;
                     break;
-                    //case PlatformID.Unix:
-                    //case PlatformID.MacOSX:
-                    //    var libraryPath = Environment.GetEnvironmentVariable(LD_LIBRARY_PATH);
-                    //    RegisterLibrariesSearchPath(libraryPath);
-                    //    break;
+                }
+                current = Directory.GetParent(current)?.FullName;
             }
 
             pkt = ffmpeg.av_packet_alloc();
@@ -91,9 +56,6 @@ namespace CUETools.Codecs.ffmpegdll
             decoded_frame = ffmpeg.av_frame_alloc();
             if (decoded_frame == null)
                 throw new Exception("Could not allocate audio frame");
-
-            //ffmpeg.avcodec_register_all();
-            ffmpeg.av_register_all();
 
 #if DEBUG
             ffmpeg.av_log_set_level(ffmpeg.AV_LOG_DEBUG);
@@ -196,10 +158,10 @@ namespace CUETools.Codecs.ffmpegdll
             int bps = stream->codecpar->bits_per_raw_sample != 0 ?
                 stream->codecpar->bits_per_raw_sample :
                 stream->codecpar->bits_per_coded_sample;
-            int channels = stream->codecpar->channels;
+            int channels = stream->codecpar->ch_layout.nb_channels;
             int sample_rate = stream->codecpar->sample_rate;
-            ulong channel_layout = stream->codecpar->channel_layout;
-            pcm = new AudioPCMConfig(bps, channels, sample_rate, (AudioPCMConfig.SpeakerConfig)channel_layout);
+            AVChannelLayout channel_layout = stream->codecpar->ch_layout;
+            pcm = new AudioPCMConfig(bps, channels, sample_rate, (AudioPCMConfig.SpeakerConfig)channel_layout.u.mask);
 
             fmt_ctx = new_fmt_ctx;
 
@@ -329,6 +291,7 @@ namespace CUETools.Codecs.ffmpegdll
                 _readBuffer = new byte[Math.Max(@buf_size, 0x4000)];
             int len = m_stream.Read(_readBuffer, 0, @buf_size);
             if (len > 0) Marshal.Copy(_readBuffer, 0, (IntPtr)buf, len);
+            else if (len == 0) return ffmpeg.AVERROR_EOF;
             return len;
         }
 
@@ -396,15 +359,27 @@ namespace CUETools.Codecs.ffmpegdll
                 {
                     case AVSampleFormat.AV_SAMPLE_FMT_S32:
                         {
-                            byte* ptr = decoded_frame->data[0u] + c->channels * 4 * m_decoded_frame_offset;
+                            byte* ptr = decoded_frame->data[0u] + c->ch_layout.nb_channels * 4 * m_decoded_frame_offset;
                             int rshift = 32 - pcm.BitsPerSample;
                             int* smp = (int*)ptr;
                             fixed (int* dst_start = &buff.Samples[buffOffset, 0])
                             {
                                 int* dst = dst_start;
-                                int* dst_end = dst_start + copyCount * c->channels;
+                                int* dst_end = dst_start + copyCount * c->ch_layout.nb_channels;
                                 while (dst < dst_end)
                                     *(dst++) = *(smp++) >> rshift;
+                            }
+                        }
+                        break;
+                    case AVSampleFormat.AV_SAMPLE_FMT_S16:
+                        {
+                            short* ptr = (short*)(decoded_frame->data[0u]) + c->ch_layout.nb_channels * m_decoded_frame_offset;
+                            fixed (int* dst_start = &buff.Samples[buffOffset, 0])
+                            {
+                                int* dst = dst_start;
+                                int* dst_end = dst_start + copyCount * c->ch_layout.nb_channels;
+                                while (dst < dst_end)
+                                    *(dst++) = *(ptr++);
                             }
                         }
                         break;
@@ -437,6 +412,9 @@ namespace CUETools.Codecs.ffmpegdll
             }
 
             buff.Length = (int)buffOffset;
+            // EOF
+            if (buff.Length == 0)
+                _sampleCount = _sampleOffset;
             return buff.Length;
         }
 

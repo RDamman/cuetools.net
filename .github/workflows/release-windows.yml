@@ -16,25 +16,31 @@ jobs:
   build:
     strategy:
       matrix:
-        # https://github.com/actions/virtual-environments/blob/master/images/win/Windows2016-Readme.md
-        os: [windows-2016]
+        # https://github.com/actions/virtual-environments/blob/master/images/win/Windows2022-Readme.md
+        os: [windows-2022]
       fail-fast: true
     runs-on: ${{ matrix.os }}
     env:
       # yamllint disable-line rule:line-length
-      DEVENV_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.com
-      SLN_PATH: CUETools\CUETools.sln
+      DEVENV_PATH: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.com
+      MSBUILD_PATH: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe
+      SLN_PATH: CUETools.sln
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
-      # nasm is required for building Release|Win32
-      - uses: ilammy/setup-nasm@v1
       - name: Apply patches
         # yamllint disable-line rule:line-length
         run: |
-          git apply --directory=ThirdParty/flac ThirdParty/submodule_flac_CUETools.patch --verbose
-          git apply --directory=ThirdParty/WavPack ThirdParty/submodule_WavPack_CUETools_VS2017.patch --verbose
+          git apply --directory=ThirdParty/flac ThirdParty/submodule_flac_CUETools.patch --verbose --whitespace=nowarn
+          powershell -c "Expand-Archive ThirdParty/MAC_SDK/MAC_1074_SDK.zip -DestinationPath ThirdParty/MAC_SDK/"
+          git apply --directory=ThirdParty/MAC_SDK ThirdParty/ThirdParty_MAC_SDK_CUETools.patch --verbose
+          git apply --directory=ThirdParty/taglib-sharp ThirdParty/submodule_taglib-sharp_CUETools.patch --verbose
+          git apply --directory=ThirdParty/WavPack ThirdParty/submodule_WavPack_CUETools.patch --verbose
+          git apply --directory=ThirdParty/WindowsMediaLib ThirdParty/submodule_WindowsMediaLib_CUETools.patch --verbose
+      - name: MSBuild NuGet restore
+        run: |
+          "%MSBUILD_PATH%" "%SLN_PATH%" -t:restore -p:Configuration=Release
       - name: Build Release|Any CPU
         run: |
           "%DEVENV_PATH%" "%SLN_PATH%" /Build "Release|Any CPU"
@@ -46,8 +52,8 @@ jobs:
           "%DEVENV_PATH%" "%SLN_PATH%" /Build "Release|Win32"
       - name: Collect files
         run: |
-          CUETools\collect_files.bat
-      - uses: actions/upload-artifact@v2
+          collect_files.bat
+      - uses: actions/upload-artifact@v4
         with:
           name: deploy
           path: bin/Release/CUETools_*/

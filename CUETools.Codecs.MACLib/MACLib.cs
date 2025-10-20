@@ -36,6 +36,9 @@ namespace CUETools.Codecs.MACLib
         APE_INFO_FRAME_BYTES = 1028,                // bytes (compressed) of the frame [frame index, ignored]
         APE_INFO_FRAME_BLOCKS = 1029,               // blocks in a given frame [frame index, ignored]
         APE_INFO_TAG = 1030,                        // point to tag (CAPETag *) [ignored, ignored]
+        APE_INFO_APL = 1031,                        // whether it's an APL file
+        APE_INFO_MD5 = 1032,                        // the MD5 checksum [buffer *, ignored]
+        APE_INFO_MD5_MATCHES = 1033,                // an MD5 checksum to test (returns ERROR_INVALID_CHECKSUM or ERROR_SUCCESS) [buffer *, ignored]
 
         APE_DECOMPRESS_CURRENT_BLOCK = 2000,        // current block location [ignored, ignored]
         APE_DECOMPRESS_CURRENT_MS = 2001,           // current millisecond location [ignored, ignored]
@@ -53,11 +56,11 @@ namespace CUETools.Codecs.MACLib
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
     internal unsafe delegate int CIO_WriteDelegate(void* pUserData, void* pBuffer, int nBytesToWrite, out int pBytesWritten);
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-    internal unsafe delegate int CIO_GetPositionDelegate(void* pUserData);
+    internal unsafe delegate long CIO_GetPositionDelegate(void* pUserData);
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-    internal unsafe delegate uint CIO_GetSizeDelegate(void* pUserData);
+    internal unsafe delegate long CIO_GetSizeDelegate(void* pUserData);
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-    internal unsafe delegate int CIO_SeekDelegate(void* pUserData, IntPtr delta, int mode);
+    internal unsafe delegate int CIO_SeekDelegate(void* pUserData, long delta, int mode);
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 2)]
     public unsafe struct WAVEFORMATEX

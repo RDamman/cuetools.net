@@ -1,7 +1,7 @@
 // ****************************************************************************
 // 
 // CUERipper
-// Copyright (C) 2008-2021 Grigory Chudov (gchudov@gmail.com)
+// Copyright (C) 2008-2024 Grigory Chudov (gchudov@gmail.com)
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -81,6 +81,7 @@ namespace CUETools.ConsoleRipper
 			Console.WriteLine("-P, --paranoid           maximum level of error correction;");
 			Console.WriteLine("-D, --drive <letter>     use a specific CD drive, e.g. {0};", drives);
 			Console.WriteLine("-O, --offset <samples>   use specific drive read offset;");
+			Console.WriteLine("-C, --c2mode <int>       use specific C2ErrorMode, 0 (None), 1 (Mode294), 2 (Mode296), 3 (Auto);");
 			Console.WriteLine("-T, --test               detect read command;");
 			Console.WriteLine("--d8                     force D8h read command;");
 			Console.WriteLine("--be                     force BEh read command;");
@@ -89,13 +90,14 @@ namespace CUETools.ConsoleRipper
 		static void Main(string[] args)
 		{
 			Console.SetOut(Console.Error);
-			Console.WriteLine("CUERipper v2.1.9 Copyright (C) 2008-2021 Grigory Chudov");
+			Console.WriteLine("CUERipper v2.2.6 Copyright (C) 2008-2024 Grigory Chudov");
 			Console.WriteLine("This is free software under the GNU GPLv3+ license; There is NO WARRANTY, to");
 			Console.WriteLine("the extent permitted by law. <http://www.gnu.org/licenses/> for details.");
 
 			int correctionQuality = 1;
 			string driveLetter = null;
 			int driveOffset = 0;
+			int driveC2ErrorMode = 3;
 			bool test = false;
 			bool forceD8 = false, forceBE = false, quiet = false;
 			for (int arg = 0; arg < args.Length; arg++)
@@ -119,6 +121,8 @@ namespace CUETools.ConsoleRipper
 					driveLetter = args[arg];
 				else if ((args[arg] == "-O" || args[arg] == "--offset") && ++arg < args.Length)
 					ok = int.TryParse(args[arg], out driveOffset);
+				else if ((args[arg] == "-C" || args[arg] == "--c2mode") && ++arg < args.Length)
+					ok = int.TryParse(args[arg], out driveC2ErrorMode) && (driveC2ErrorMode >= 0 && driveC2ErrorMode <=3);
 				else
 					ok = false;
 				if (!ok)
@@ -163,6 +167,7 @@ namespace CUETools.ConsoleRipper
 						//throw new Exception("Failed to find drive read offset for drive" + audioSource.ARName);
 
 				audioSource.DriveOffset = driveOffset;
+				audioSource.DriveC2ErrorMode = driveC2ErrorMode;
 				audioSource.CorrectionQuality = correctionQuality;
 				audioSource.DebugMessages = !quiet;
 				if (forceD8) audioSource.ForceD8 = true;
@@ -180,7 +185,7 @@ namespace CUETools.ConsoleRipper
 				string ArId = AccurateRipVerify.CalculateAccurateRipId(audioSource.TOC);
 				var ctdb = new CUEToolsDB(audioSource.TOC, null);
 				ctdb.Init(arVerify);
-				ctdb.ContactDB(null, "CUETools.ConsoleRipper 2.1.9", audioSource.ARName, true, false, CTDBMetadataSearch.Fast);
+				ctdb.ContactDB(null, "CUETools.ConsoleRipper 2.2.6", audioSource.ARName, true, false, CTDBMetadataSearch.Fast);
 				arVerify.ContactAccurateRip(ArId);
 				CTDBResponseMeta meta = null;
 				foreach (var imeta in ctdb.Metadata)
@@ -192,8 +197,20 @@ namespace CUETools.ConsoleRipper
 				//string destFile = (release == null) ? "cdimage.flac" : release.GetArtist() + " - " + release.GetTitle() + ".flac";
 				string destFile = (meta == null) ? "cdimage.wav" : string.Join("_", (meta.artist + " - " + meta.album).Split(Path.GetInvalidFileNameChars())) + ".wav";
 
+				// Do not automatically overwrite an existing file. Use a unique filename, e.g. "cdimage (1).wav"
+				string extension = Path.GetExtension(destFile);
+				int i = 0;
+				while (File.Exists(destFile))
+				{
+					if (i == 0)
+						destFile = destFile.Replace(extension, " (" + ++i + ")" + extension);
+					else
+						destFile = destFile.Replace("(" + i + ")" + extension, "(" + ++i + ")" + extension);
+				}
+
 				Console.WriteLine("Drive       : {0}", audioSource.Path);
 				Console.WriteLine("Read offset : {0}", audioSource.DriveOffset);
+				Console.WriteLine("C2ErrorMode : {0} ({1})", audioSource.DriveC2ErrorMode, (DriveC2ErrorModeSetting)audioSource.DriveC2ErrorMode);
 				Console.WriteLine("Read cmd    : {0}", audioSource.CurrentReadCommand);
 				Console.WriteLine("Secure mode : {0}", audioSource.CorrectionQuality);
 				Console.WriteLine("Filename    : {0}", destFile);
@@ -263,7 +280,8 @@ namespace CUETools.ConsoleRipper
 				logWriter.WriteLine("{0}", audioSource.RipperVersion);
 				logWriter.WriteLine("Extraction logfile from {0}", DateTime.Now);
 				logWriter.WriteLine("Used drive  : {0}", audioSource.Path);
-				logWriter.WriteLine("Read offset correction                      : {0}", audioSource.DriveOffset);
+				logWriter.WriteLine("Read offset correction : {0}", audioSource.DriveOffset);
+				logWriter.WriteLine("C2 error mode          : {0} ({1})", audioSource.DriveC2ErrorMode, (DriveC2ErrorModeSetting)audioSource.DriveC2ErrorMode);
 				bool wereErrors = false;
 				for (int iTrack = 1; iTrack <= audioSource.TOC.AudioTracks; iTrack++)
 					for (uint iSector = audioSource.TOC[iTrack].Start; iSector <= audioSource.TOC[iTrack].End; iSector ++)

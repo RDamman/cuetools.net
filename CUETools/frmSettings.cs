@@ -71,7 +71,9 @@ namespace JDP
 			chkHDCDDecode.Checked = _config.decodeHDCD;
 			chkHDCDStopLooking.Checked = _config.wait750FramesForHDCD;
 			chkCreateM3U.Checked = _config.createM3U;
+			chkCreateCUEFileInTracksMode.Checked = _config.createCUEFileInTracksMode;
 			chkCreateCUEFileWhenEmbedded.Checked = _config.createCUEFileWhenEmbedded;
+			chkAlwaysWriteUTF8CUEFile.Checked = _config.alwaysWriteUTF8CUEFile;
 			chkTruncateExtra4206Samples.Checked = _config.truncate4608ExtraSamples;
 			chkHDCDLW16.Checked = _config.decodeHDCDtoLW16;
 			chkHDCD24bit.Checked = _config.decodeHDCDto24bit;
@@ -89,6 +91,7 @@ namespace JDP
 			//textBoxARLogExtension.Text = _config.arLogFilenameFormat;
 			numericUpDownMaxResolution.Value = _config.maxAlbumArtSize;
 			checkBoxSeparateDecodingThread.Checked = _config.separateDecodingThread;
+			chkUseHTOALengthThreshold.Checked = _config.useHTOALengthThreshold;
 
 			switch (_config.gapsHandling)
 			{
@@ -189,6 +192,7 @@ namespace JDP
 			_reducePriority = chkReducePriority.Checked;
 			_config.checkForUpdates = checkBoxCheckForUpdates.Checked;
 			_config.preserveHTOA = rbGapsPlusHTOA.Checked;
+			_config.useHTOALengthThreshold = chkUseHTOALengthThreshold.Checked;
 			_config.gapsHandling = rbGapsPrepended.Checked ? CUEStyle.GapsPrepended :
 				rbGapsLeftOut.Checked ? CUEStyle.GapsLeftOut :
 				CUEStyle.GapsAppended;
@@ -216,7 +220,9 @@ namespace JDP
 			_config.wait750FramesForHDCD = chkHDCDStopLooking.Checked;
 			_config.decodeHDCD = chkHDCDDecode.Checked;
 			_config.createM3U = chkCreateM3U.Checked;
+			_config.createCUEFileInTracksMode = chkCreateCUEFileInTracksMode.Checked;
 			_config.createCUEFileWhenEmbedded = chkCreateCUEFileWhenEmbedded.Checked;
+			_config.alwaysWriteUTF8CUEFile = chkAlwaysWriteUTF8CUEFile.Checked;
 			_config.truncate4608ExtraSamples = chkTruncateExtra4206Samples.Checked;
 			_config.decodeHDCDtoLW16 = chkHDCDLW16.Checked;
 			_config.decodeHDCDto24bit = chkHDCD24bit.Checked;
@@ -518,7 +524,7 @@ namespace JDP
             }
         }
 
-        private void listViewDecoders_KeyDown(object sender, KeyEventArgs e)
+        private void listBoxDecoders_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {

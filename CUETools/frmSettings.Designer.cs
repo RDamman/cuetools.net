@@ -37,7 +37,9 @@ namespace JDP
             this.chkAllowMultipleInstances = new System.Windows.Forms.CheckBox();
             this.chkReducePriority = new System.Windows.Forms.CheckBox();
             this.chkTruncateExtra4206Samples = new System.Windows.Forms.CheckBox();
+            this.chkCreateCUEFileInTracksMode = new System.Windows.Forms.CheckBox();
             this.chkCreateCUEFileWhenEmbedded = new System.Windows.Forms.CheckBox();
+            this.chkAlwaysWriteUTF8CUEFile = new System.Windows.Forms.CheckBox();
             this.chkCreateM3U = new System.Windows.Forms.CheckBox();
             this.chkAutoCorrectFilenames = new System.Windows.Forms.CheckBox();
             this.labelLanguage = new System.Windows.Forms.Label();
@@ -73,6 +75,7 @@ namespace JDP
             this.rbGapsLeftOut = new System.Windows.Forms.RadioButton();
             this.rbGapsPrepended = new System.Windows.Forms.RadioButton();
             this.rbGapsAppended = new System.Windows.Forms.RadioButton();
+            this.chkUseHTOALengthThreshold = new System.Windows.Forms.CheckBox();
             this.rbGapsPlusHTOA = new System.Windows.Forms.RadioButton();
             this.textBoxEncoderName = new System.Windows.Forms.TextBox();
             this.textBoxDecoderName = new System.Windows.Forms.TextBox();
@@ -226,7 +229,9 @@ namespace JDP
             this.grpGeneral.Controls.Add(this.chkAllowMultipleInstances);
             this.grpGeneral.Controls.Add(this.chkReducePriority);
             this.grpGeneral.Controls.Add(this.chkTruncateExtra4206Samples);
+            this.grpGeneral.Controls.Add(this.chkCreateCUEFileInTracksMode);
             this.grpGeneral.Controls.Add(this.chkCreateCUEFileWhenEmbedded);
+            this.grpGeneral.Controls.Add(this.chkAlwaysWriteUTF8CUEFile);
             this.grpGeneral.Controls.Add(this.chkCreateM3U);
             this.grpGeneral.Controls.Add(this.chkAutoCorrectFilenames);
             resources.ApplyResources(this.grpGeneral, "grpGeneral");
@@ -268,12 +273,26 @@ namespace JDP
             this.toolTip1.SetToolTip(this.chkTruncateExtra4206Samples, resources.GetString("chkTruncateExtra4206Samples.ToolTip"));
             this.chkTruncateExtra4206Samples.UseVisualStyleBackColor = true;
             // 
+            // chkCreateCUEFileInTracksMode
+            // 
+            resources.ApplyResources(this.chkCreateCUEFileInTracksMode, "chkCreateCUEFileInTracksMode");
+            this.chkCreateCUEFileInTracksMode.Name = "chkCreateCUEFileInTracksMode";
+            this.toolTip1.SetToolTip(this.chkCreateCUEFileInTracksMode, resources.GetString("chkCreateCUEFileInTracksMode.ToolTip"));
+            this.chkCreateCUEFileInTracksMode.UseVisualStyleBackColor = true;
+            // 
             // chkCreateCUEFileWhenEmbedded
             // 
             resources.ApplyResources(this.chkCreateCUEFileWhenEmbedded, "chkCreateCUEFileWhenEmbedded");
             this.chkCreateCUEFileWhenEmbedded.Name = "chkCreateCUEFileWhenEmbedded";
             this.toolTip1.SetToolTip(this.chkCreateCUEFileWhenEmbedded, resources.GetString("chkCreateCUEFileWhenEmbedded.ToolTip"));
             this.chkCreateCUEFileWhenEmbedded.UseVisualStyleBackColor = true;
+            // 
+            // chkAlwaysWriteUTF8CUEFile
+            // 
+            resources.ApplyResources(this.chkAlwaysWriteUTF8CUEFile, "chkAlwaysWriteUTF8CUEFile");
+            this.chkAlwaysWriteUTF8CUEFile.Name = "chkAlwaysWriteUTF8CUEFile";
+            this.toolTip1.SetToolTip(this.chkAlwaysWriteUTF8CUEFile, resources.GetString("chkAlwaysWriteUTF8CUEFile.ToolTip"));
+            this.chkAlwaysWriteUTF8CUEFile.UseVisualStyleBackColor = true;
             // 
             // chkCreateM3U
             // 
@@ -571,6 +590,13 @@ namespace JDP
             this.toolTip1.SetToolTip(this.rbGapsAppended, resources.GetString("rbGapsAppended.ToolTip"));
             this.rbGapsAppended.UseVisualStyleBackColor = true;
             // 
+            // chkUseHTOALengthThreshold
+            // 
+            resources.ApplyResources(this.chkUseHTOALengthThreshold, "chkUseHTOALengthThreshold");
+            this.chkUseHTOALengthThreshold.Name = "chkUseHTOALengthThreshold";
+            this.toolTip1.SetToolTip(this.chkUseHTOALengthThreshold, resources.GetString("chkUseHTOALengthThreshold.ToolTip"));
+            this.chkUseHTOALengthThreshold.UseVisualStyleBackColor = true;
+            // 
             // rbGapsPlusHTOA
             // 
             resources.ApplyResources(this.rbGapsPlusHTOA, "rbGapsPlusHTOA");
@@ -679,6 +705,7 @@ namespace JDP
             // groupBoxGaps
             // 
             this.groupBoxGaps.Controls.Add(this.rbGapsPlusHTOA);
+            this.groupBoxGaps.Controls.Add(this.chkUseHTOALengthThreshold);
             this.groupBoxGaps.Controls.Add(this.rbGapsAppended);
             this.groupBoxGaps.Controls.Add(this.rbGapsLeftOut);
             this.groupBoxGaps.Controls.Add(this.rbGapsPrepended);
@@ -1280,6 +1307,7 @@ namespace JDP
             this.listBoxDecoders.FormattingEnabled = true;
             this.listBoxDecoders.Name = "listBoxDecoders";
             this.tableLayoutPanel5.SetRowSpan(this.listBoxDecoders, 2);
+            this.listBoxDecoders.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listBoxDecoders_KeyDown);
             // 
             // tabPage4
             // 
@@ -1291,11 +1319,11 @@ namespace JDP
             // 
             // grpHDCD
             // 
+            resources.ApplyResources(this.grpHDCD, "grpHDCD");
             this.grpHDCD.Controls.Add(this.chkHDCD24bit);
             this.grpHDCD.Controls.Add(this.chkHDCDLW16);
             this.grpHDCD.Controls.Add(this.chkHDCDStopLooking);
             this.grpHDCD.Controls.Add(this.chkHDCDDecode);
-            resources.ApplyResources(this.grpHDCD, "grpHDCD");
             this.grpHDCD.Name = "grpHDCD";
             this.grpHDCD.TabStop = false;
             // 
@@ -1454,7 +1482,9 @@ namespace JDP
         private System.Windows.Forms.GroupBox grpHDCD;
         private System.Windows.Forms.CheckBox chkHDCDStopLooking;
         private System.Windows.Forms.CheckBox chkCreateM3U;
+        private System.Windows.Forms.CheckBox chkCreateCUEFileInTracksMode;
         private System.Windows.Forms.CheckBox chkCreateCUEFileWhenEmbedded;
+        private System.Windows.Forms.CheckBox chkAlwaysWriteUTF8CUEFile;
         private System.Windows.Forms.CheckBox chkTruncateExtra4206Samples;
         private System.Windows.Forms.CheckBox chkReducePriority;
         private System.Windows.Forms.CheckBox chkHDCDLW16;
@@ -1524,6 +1554,7 @@ namespace JDP
         private System.Windows.Forms.TextBox textBoxEncoderModes;
         private System.Windows.Forms.GroupBox groupBoxGaps;
         private System.Windows.Forms.RadioButton rbGapsPlusHTOA;
+        private System.Windows.Forms.CheckBox chkUseHTOALengthThreshold;
         private System.Windows.Forms.RadioButton rbGapsAppended;
         private System.Windows.Forms.RadioButton rbGapsLeftOut;
         private System.Windows.Forms.RadioButton rbGapsPrepended;

@@ -88,7 +88,7 @@ namespace CUETools.FlakeExe
     {
         static void Usage()
         {
-            Console.WriteLine("Usage    : CUETools.Flake.exe [options] <input.wav>");
+            Console.WriteLine("Usage    : CUETools.Flake.exe [options] <input.wav> (or \"-\" for stdin)");
             Console.WriteLine();
             Console.WriteLine("Options:");
             Console.WriteLine();
@@ -300,7 +300,7 @@ namespace CUETools.FlakeExe
 
             if (!quiet)
             {
-                Console.WriteLine("CUETools.Flake, Copyright (C) 2009-2021 Grigory Chudov.");
+                Console.WriteLine("CUETools.Flake, Copyright (C) 2009-2024 Grigory Chudov.");
                 Console.WriteLine("Initially based on Flake encoder by Justin Ruggles.");
                 Console.WriteLine("This is free software under the GNU GPLv3+ license; There is NO WARRANTY, to");
                 Console.WriteLine("the extent permitted by law. <http://www.gnu.org/licenses/> for details.");
@@ -388,8 +388,15 @@ namespace CUETools.FlakeExe
 
                                 if (order_method != null)
                                     flake.OrderMethod = FlakeConstants.LookupOrderMethod(order_method);
-                                if (vbr_mode >= 0)
+                                // if (vbr_mode >= 0)
+                                if (vbr_mode == 0)
                                     flake.VBRMode = vbr_mode;
+                                else if (vbr_mode > 0)
+                                {
+                                    Console.WriteLine("Variable block size modes 1-4 are currently disabled.");
+                                    Console.WriteLine("See: https://github.com/gchudov/cuetools.net/issues/220");
+                                    return 1;
+                                }
                                 if (magic >= 0)
                                     flake.DevelopmentMode = magic;
                                 flake.DoSeekTable = do_seektable;

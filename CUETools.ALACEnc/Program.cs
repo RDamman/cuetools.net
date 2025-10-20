@@ -11,7 +11,7 @@ namespace CUETools.ALACEnc
 	{
 		static void Usage()
 		{
-			Console.WriteLine("Usage    : CUETools.ALACEnc.exe [options] <input.wav>");
+			Console.WriteLine("Usage    : CUETools.ALACEnc.exe [options] <input.wav> (or \"-\" for stdin)");
 			Console.WriteLine();
 			Console.WriteLine("Options:");
 			Console.WriteLine();
@@ -143,7 +143,7 @@ namespace CUETools.ALACEnc
 
 			if (!quiet)
 			{
-				Console.WriteLine("CUETools.ALACEnc, Copyright (C) 2009-2021 Grigory Chudov.");
+				Console.WriteLine("CUETools.ALACEnc, Copyright (C) 2009-2024 Grigory Chudov.");
 				Console.WriteLine("Based on ffdshow ALAC audio encoder");
 				Console.WriteLine("Copyright (c) 2008  Jaikrishnan Menon, <realityman@gmx.net>");
 				Console.WriteLine("This is free software under the GNU GPLv3+ license; There is NO WARRANTY, to");
@@ -188,7 +188,13 @@ namespace CUETools.ALACEnc
 			try
 			{
 				if (stereo_method != null)
+				{
 					alac.StereoMethod = Alac.LookupStereoMethod(stereo_method);
+					if (!Enum.IsDefined(typeof(StereoMethod), alac.StereoMethod))
+					{
+						throw new Exception("Invalid stereo method specified.");
+					}
+				}
 				if (order_method != null)
 					alac.OrderMethod = Alac.LookupOrderMethod(order_method);
 				if (window_function != null)
@@ -217,7 +223,7 @@ namespace CUETools.ALACEnc
 			{
 				Usage();
 				Console.WriteLine("");
-				Console.WriteLine("Error: {0}.", ex.Message);
+				Console.WriteLine("Error: {0}", ex.Message);
 				return 3;
 			}
 

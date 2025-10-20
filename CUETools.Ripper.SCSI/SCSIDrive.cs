@@ -1,7 +1,7 @@
 // ****************************************************************************
 // 
 // CUERipper
-// Copyright (C) 2008-2021 Grigory Chudov (gchudov@gmail.com)
+// Copyright (C) 2008-2024 Grigory Chudov (gchudov@gmail.com)
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ namespace CUETools.Ripper.SCSI
 		private Device m_device;
 		int _sampleOffset = 0;
 		int _driveOffset = 0;
+		DriveC2ErrorModeSetting _driveC2ErrorMode = DriveC2ErrorModeSetting.Auto;
 		int _correctionQuality = 1;
 		int _currentStart = -1, _currentEnd = -1, _currentErrorsCount = 0;
 		const int CB_AUDIO = 4 * 588 + 2 + 294 + 16;
@@ -635,10 +636,10 @@ namespace CUETools.Ripper.SCSI
             }
         }
 
-        public void DisableEjectDrive(bool bDisable)
+        public void DisableEjectDisc(bool bDisable)
         {
             if (m_device != null)
-                m_device.DisableEjectDrive(bDisable);
+                m_device.DisableEjectDisc(bDisable);
             else
             {
                 try
@@ -648,7 +649,7 @@ namespace CUETools.Ripper.SCSI
                     {
                         try
                         {
-                            m_device.DisableEjectDrive(bDisable);
+                            m_device.DisableEjectDisc(bDisable);
                         }
                         finally
                         {
@@ -811,12 +812,55 @@ namespace CUETools.Ripper.SCSI
 				return true;
 
 			ReadCDCommand[] readmode = { ReadCDCommand.ReadCdBEh, ReadCDCommand.ReadCdD8h };
-			Device.C2ErrorMode[] c2mode = { Device.C2ErrorMode.Mode294, Device.C2ErrorMode.Mode296, Device.C2ErrorMode.None };
-			// Mode294 does not work for these drives: LG GH24NSD1, ASUS DRW-24D5MT. Try Mode296 first
-			if (Path.Contains("GH24NSD1") || Path.Contains("DRW-24D5MT"))
+			Device.C2ErrorMode[] c2mode = { Device.C2ErrorMode.Mode294 };
+			if (_driveC2ErrorMode == DriveC2ErrorModeSetting.Auto)
 			{
+				// Drives can contain one or multiple spaces in the name, e.g. "ASUS DRW-24F1ST   d". Remove any spaces from Path.
+				string pathNoSpace = Path.Replace(" ", String.Empty);
+
+				// Mode294 does not work for these drives. Try Mode296 first, which has been reported to work:
+				// ASUS DRW-24D5MT, ASUS DRW-24F1ST d,
+				// HL-DT-ST BD-RE BU40N, HL-DT-ST BD-RE WH10LS30, HL-DT-ST DVDRAM GH22LS51,
+				// LG GH24NSD1, GH24NSD5,
+				// LITEON DH-20A4P,
+				// MATSHITA DVD-R UJ-868,
+				// PIONEER BDR-XD05, PIONEER BDR-XD07U, PIONEER DVR-S21,
+				// PLDS DU-8A5LH,
+				// Slimtype - DVD A DU8AESH.
+				if (pathNoSpace.Contains("DRW-24D5MT") || pathNoSpace.Contains("DRW-24F1STd") ||
+					pathNoSpace.Contains("BU40N") || pathNoSpace.Contains("WH10LS30") || pathNoSpace.Contains("GH22LS51") ||
+					pathNoSpace.Contains("GH24NSD1") || pathNoSpace.Contains("GH24NSD5") ||
+					pathNoSpace.Contains("DH20A4P") ||
+					pathNoSpace.Contains("UJ-868") ||
+					pathNoSpace.Contains("BDR-XD05") || pathNoSpace.Contains("BDR-XD07U") || pathNoSpace.Contains("DVR-S21") ||
+					pathNoSpace.Contains("DU-8A5LH") ||
+					pathNoSpace.Contains("DU8AESH"))
+				{
+					Array.Resize(ref c2mode, 2);
 				c2mode.SetValue(Device.C2ErrorMode.Mode296, 0);
-				c2mode.SetValue(Device.C2ErrorMode.Mode294, 1);
+					c2mode.SetValue(Device.C2ErrorMode.None, 1);
+			}
+
+				// Mode294 does not work for this drive, C2ErrorMode.None has been reported to work:
+				// iHAS324 F.
+				else if (pathNoSpace.Contains("iHAS324F"))
+				{
+					c2mode.SetValue(Device.C2ErrorMode.None, 0);
+				}
+
+				// Default. Auto detection of C2ErrorMode for most drives.
+				// Device.C2ErrorMode[] c2mode = { Device.C2ErrorMode.Mode294, Device.C2ErrorMode.Mode296, Device.C2ErrorMode.None };
+				else
+				{
+					Array.Resize(ref c2mode, 3);
+					c2mode.SetValue(Device.C2ErrorMode.Mode296, 1);
+					c2mode.SetValue(Device.C2ErrorMode.None, 2);
+				}
+			}
+			else
+			{
+				// Disable auto-detection of c2mode and override with setting
+				c2mode.SetValue((Device.C2ErrorMode)_driveC2ErrorMode, 0);
 			}
 			Device.MainChannelSelection[] mainmode = { Device.MainChannelSelection.UserData, Device.MainChannelSelection.F8h };
 			bool found = false;
@@ -826,7 +870,7 @@ namespace CUETools.Ripper.SCSI
 			int sector = 3;
 			int pass = 0;
 
-			for (int c = 0; c <= 2 && !found; c++)
+			for (int c = 0; c <= c2mode.Length - 1 && !found; c++)
 				for (int r = 0; r <= 1 && !found; r++)
 					for (int m = 0; m <= 1 && !found; m++)
 					{
@@ -1274,6 +1318,18 @@ namespace CUETools.Ripper.SCSI
 			}
 		}
 
+		public int DriveC2ErrorMode
+		{
+			get
+			{
+				return (int)_driveC2ErrorMode;
+			}
+			set
+			{
+				_driveC2ErrorMode = (DriveC2ErrorModeSetting)value;
+			}
+		}
+
 		public int CorrectionQuality
 		{
 			get
@@ -1294,7 +1350,7 @@ namespace CUETools.Ripper.SCSI
 		{
 			get
 			{
-				return "CUERipper v2.1.9 Copyright (C) 2008-2021 Grigory Chudov";
+				return "CUERipper v2.2.6 Copyright (C) 2008-2024 Grigory Chudov";
 				// ripper.GetName().Name + " " + ripper.GetName().Version;
 			}
 		}

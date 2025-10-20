@@ -2,7 +2,7 @@
 // 
 // CUE Tools
 // Copyright (C) 2006-2007  Moitah (moitah@yahoo.com)
-// Copyright (C) 2008-2021  Gregory S. Chudov (gchudov@gmail.com)
+// Copyright (C) 2008-2024  Gregory S. Chudov (gchudov@gmail.com)
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -319,6 +319,15 @@ namespace JDP
             UpdateOutputPath();
         }
 
+        private void comboBoxOutputFormat_Validating(object sender, CancelEventArgs e)
+        {
+            if (!comboBoxOutputFormat.Text.EndsWith(".cue", StringComparison.InvariantCultureIgnoreCase))
+            {
+                comboBoxOutputFormat.Text = comboBoxOutputFormat.Text + ".cue";
+            }
+            UpdateOutputPath();
+        }
+
         private void frmCUETools_Load(object sender, EventArgs e)
         {
             _batchPaths = new List<string>();
@@ -554,7 +563,11 @@ namespace JDP
         private void MakeSelection(object sender, CUEToolsSelectionEventArgs e)
         {
             if (_batchPaths.Count > 1 || _batchProcessed > 0)
+            {
+                // Select the first album art (or log file) in case of batch mode.
+                e.selection = 0;
                 return;
+            }
             this.Invoke((MethodInvoker)delegate()
             {
                 frmChoice dlg = new frmChoice();
@@ -609,7 +622,7 @@ namespace JDP
         {
             get
             {
-                return "CUETools 2.1.9";
+                return "CUETools 2.2.6";
             }
         }
 
@@ -770,8 +783,8 @@ namespace JDP
                         }
                         if (File.Exists(fullCueName))
                             throw new Exception("file already exists");
-                        bool utf8Required = CUESheet.Encoding.GetString(CUESheet.Encoding.GetBytes(cueSheetContents)) != cueSheetContents;
-                        StreamWriter sw1 = new StreamWriter(fullCueName, false, utf8Required ? Encoding.UTF8 : CUESheet.Encoding);
+                        bool utf8Required = _profile._config.alwaysWriteUTF8CUEFile || (CUESheet.Encoding.GetString(CUESheet.Encoding.GetBytes(cueSheetContents)) != cueSheetContents);
+                        StreamWriter sw1 = new StreamWriter(fullCueName, false, utf8Required ? new UTF8Encoding(_profile._config.writeUTF8BOM) : CUESheet.Encoding);
                         sw1.Write(cueSheetContents);
                         sw1.Close();
                         BatchLog("created ok.", fullCueName);
@@ -801,7 +814,7 @@ namespace JDP
                         if (Path.GetExtension(pathIn).ToLower() != ".cue")
                             throw new Exception("is not a .cue file");
                         string cue = null;
-                        using (StreamReader sr = new StreamReader(pathIn, CUESheet.Encoding))
+                        using (StreamReader sr = CUESheet.StreamReader_UTF_ANSI(pathIn))
                             cue = sr.ReadToEnd();
                         string extension;
                         string fixedCue;
@@ -833,7 +846,7 @@ namespace JDP
                         {
                             if (toolStripButtonCorrectorOverwrite.Checked)
                             {
-                                CUESheet.WriteText(pathIn, fixedCue);
+                                CUESheet.WriteText(_profile._config, pathIn, fixedCue);
                                 BatchLog("corrected ({0}).", pathIn, extension);
                             }
                             else
@@ -843,7 +856,7 @@ namespace JDP
                                     BatchLog("corrected cue already exists.", pathIn);
                                 else
                                 {
-                                    CUESheet.WriteText(fixedPath, fixedCue);
+                                    CUESheet.WriteText(_profile._config, fixedPath, fixedCue);
                                     BatchLog("corrected ({0}).", pathIn, extension);
                                 }
                             }
@@ -964,6 +977,10 @@ namespace JDP
                                 {
                                     cueSheet.Close();
                                     SetupControls(false);
+                                    if (_batchPaths.Count == 1)
+                                    {
+                                        _batchPaths.Clear();
+                                    }
                                 }
                                 else if (_profile._config.advanced.CacheMetadata && dlg.ChosenRelease != null)
                                 {
@@ -1353,6 +1370,10 @@ namespace JDP
             SelectedCUEStyle = _profile._CUEStyle;
             textBoxOffset.Text = _profile._writeOffset.ToString();
             comboBoxOutputFormat.Text = _profile._outputTemplate ?? comboBoxOutputFormat.Items[0].ToString();
+            if (!comboBoxOutputFormat.Text.EndsWith(".cue", StringComparison.InvariantCultureIgnoreCase))
+            {
+                comboBoxOutputFormat.Text = comboBoxOutputFormat.Text + ".cue";
+            }
             toolStripDropDownButtonProfile.Text = _profile._name;
             SelectedScript = _profile._script;
             checkBoxEditTags.Checked = _profile._editTags;

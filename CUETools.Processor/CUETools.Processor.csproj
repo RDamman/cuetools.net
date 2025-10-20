@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <TargetFrameworks>net47;netstandard2.0</TargetFrameworks>
-    <Version>2.1.9.0</Version>
+    <Version>2.2.6.0</Version>
     <AssemblyName>CUETools.Processor</AssemblyName>
     <RootNamespace>CUETools.Processor</RootNamespace>
     <Product>CUETools</Product>
     <Description>A library for working with CUE Sheets and CD images.</Description>
-    <Copyright>Copyright (c) 2008-2021 Grigory Chudov</Copyright>
+    <Copyright>Copyright (c) 2008-2024 Grigory Chudov</Copyright>
     <Authors>Grigory Chudov</Authors>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputPath>..\bin\$(Configuration)\</OutputPath>
@@ -23,7 +23,7 @@
   </ItemDefinitionGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,7 +34,7 @@
     <ProjectReference Include="..\CUETools.CTDB\CUETools.CTDB.csproj" />
     <ProjectReference Include="..\CUETools.Ripper\CUETools.Ripper.csproj" />
     <ProjectReference Include="..\Freedb\Freedb.csproj" />
-    <ProjectReference Include="..\ThirdParty\taglib-sharp\src\taglib-sharp.csproj">
+    <ProjectReference Include="..\ThirdParty\taglib-sharp\src\TaglibSharp\TaglibSharp.csproj">
       <Private>true</Private>
     </ProjectReference>
   </ItemGroup>

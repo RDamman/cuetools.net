@@ -2,15 +2,17 @@
 
   <PropertyGroup>
     <TargetFrameworks>net47;net20;netstandard2.0</TargetFrameworks>
-    <Version>2.1.9.0</Version>
+    <Version>2.2.6.0</Version>
     <AssemblyName>CUETools.Codecs.MPEG</AssemblyName>
     <RootNamespace>CUETools.Codecs.MPEG</RootNamespace>
     <Product>CUETools</Product>
     <Description>A library for encoding and decoding BluRay Disc LPCM audio.</Description>
-    <Copyright>Copyright (c) 2008-2021 Grigory Chudov</Copyright>
+    <Copyright>Copyright (c) 2008-2024 Grigory Chudov</Copyright>
     <Authors>Grigory Chudov</Authors>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <OutputPath>..\bin\$(Configuration)\plugins</OutputPath>
+    <OutputPath>..\bin\$(Configuration)\$(TargetFramework)\plugins\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(TargetFramework)\</IntermediateOutputPath>
     <RepositoryUrl>https://github.com/gchudov/cuetools.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Company />

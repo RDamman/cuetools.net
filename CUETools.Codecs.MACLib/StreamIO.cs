@@ -66,19 +66,19 @@ namespace CUETools.Codecs.MACLib
             return 0;
         }
 
-        int TellCallback(void* id)
+        long TellCallback(void* id)
         {
-            return (int)m_stream.Position;
+            return m_stream.Position;
         }
 
-        uint GetSizeCallback(void* id)
+        long GetSizeCallback(void* id)
         {
-            return (uint)m_stream.Length;
+            return m_stream.Length;
         }
 
-        int SeekRelativeCallback(void* id, IntPtr delta, int mode)
+        int SeekRelativeCallback(void* id, long delta, int mode)
         {
-            m_stream.Seek((long)delta, (SeekOrigin)(mode));
+            m_stream.Seek(delta, (SeekOrigin)(mode));
             return 0;
         }
 

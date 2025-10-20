@@ -2,15 +2,20 @@
 
   <PropertyGroup>
     <TargetFrameworks>net47;net20;netstandard2.0</TargetFrameworks>
-    <Version>2.1.9.0</Version>
+    <Version>2.2.6.0</Version>
     <AssemblyName>CUETools.Compression.Rar</AssemblyName>
     <RootNamespace>CUETools.Compression.Rar</RootNamespace>
     <Product>CUETools</Product>
     <Description>A library for decompressing RAR.</Description>
-    <Copyright>Copyright (c) 2008-2021 Grigory Chudov, Michael A. McCloskey</Copyright>
+    <Copyright>Copyright (c) 2008-2024 Grigory Chudov, Michael A. McCloskey</Copyright>
     <Authors>Grigory Chudov, Michael A. McCloskey</Authors>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <OutputPath>..\bin\$(Configuration)\plugins\win32</OutputPath>
+    <OutputPath>..\bin\$(Configuration)\$(TargetFramework)\plugins\win32\</OutputPath>
+    <!-- The output to plugins\win32\ is intentional. CUETools.Compression.Rar.dll needs to be
+    in the same directory as unrar.dll. For distribution, CUETools.Compression.Rar.dll is later on
+    copied to plugins\x64\ -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(TargetFramework)\</IntermediateOutputPath>
     <RepositoryUrl>https://github.com/gchudov/cuetools.net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Company />
@@ -25,5 +30,12 @@
   <ItemGroup>
     <ProjectReference Include="..\CUETools.Compression\CUETools.Compression.csproj" />
   </ItemGroup>
+
+  <Target Name="CopyFiles" AfterTargets="Build">
+    <CreateItem Include="$(OutputPath)\CUETools.Compression.Rar.*">
+      <Output TaskParameter="Include" ItemName="FilesToCopy" />
+    </CreateItem>
+    <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(OutputPath)\..\x64\" ContinueOnError="true" />
+  </Target>
 
 </Project>

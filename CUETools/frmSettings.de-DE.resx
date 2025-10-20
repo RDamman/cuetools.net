@@ -480,4 +480,22 @@ Sie können foobar2000 dazu bringen, die Werte anzuzeigen, und sehen, ob Ihre Mu
   <data name="tabPageEncoders.Text" xml:space="preserve">
     <value>Encoder</value>
   </data>
+  <data name="chkCreateCUEFileInTracksMode.Text" xml:space="preserve">
+    <value>Erstelle .cue-Datei im Einzeldatei-Modus</value>
+  </data>
+  <data name="chkCreateCUEFileInTracksMode.ToolTip" xml:space="preserve">
+    <value>Einstellung, mit der das Erstellen einer CUE-Datei im Einzeldatei-Modus deaktiviert werden kann.</value>
+  </data>
+  <data name="chkAlwaysWriteUTF8CUEFile.Text" xml:space="preserve">
+    <value>Immer UTF-8 CUE-Sheet schreiben</value>
+  </data>
+  <data name="chkAlwaysWriteUTF8CUEFile.ToolTip" xml:space="preserve">
+    <value>Standardmäßig UTF-8-Kodierung zum Schreiben von CUE-Sheets verwenden</value>
+  </data>
+  <data name="chkUseHTOALengthThreshold.Text" xml:space="preserve">
+    <value>HTOA &gt; 5s</value>
+  </data>
+  <data name="chkUseHTOALengthThreshold.ToolTip" xml:space="preserve">
+    <value>HTOA-Datei wird nur gespeichert, wenn sie länger als 5 Sekunden ist</value>
+  </data>
 </root>

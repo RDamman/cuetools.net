@@ -11,14 +11,17 @@ Prebuilt binaries can be downloaded from [CUETools Download](http://cue.tools/wi
 `git clone https://github.com/gchudov/cuetools.net.git`
 * Get the required submodules using:  
 `git submodule update --init --recursive`
-* Apply patches to submodules:  
-`git apply --directory=ThirdParty/flac ThirdParty/submodule_flac_CUETools.patch`  
-`git apply --directory=ThirdParty/WavPack ThirdParty/submodule_WavPack_CUETools_VS2017.patch`
+* Apply patches to ThirdParty modules:  
+`git apply --directory=ThirdParty/flac ThirdParty/submodule_flac_CUETools.patch --whitespace=nowarn`  
+`powershell -c "Expand-Archive ThirdParty/MAC_SDK/MAC_1074_SDK.zip -DestinationPath ThirdParty/MAC_SDK/"`  
+`git apply --directory=ThirdParty/MAC_SDK ThirdParty/ThirdParty_MAC_SDK_CUETools.patch`  
+`git apply --directory=ThirdParty/taglib-sharp ThirdParty/submodule_taglib-sharp_CUETools.patch`  
+`git apply --directory=ThirdParty/WavPack ThirdParty/submodule_WavPack_CUETools.patch`  
+`git apply --directory=ThirdParty/WindowsMediaLib ThirdParty/submodule_WindowsMediaLib_CUETools.patch`
 * The solution can be built using Microsoft Visual Studio 2017 or newer (Community Edition will work)
   * Install the required .NET development tools (currently .NET Framework 4.7 and .NET Core 2.0)
-  * Install an appropriate Windows SDK version (currently 10.0.16299.0)
+  * Install an appropriate Windows SDK version (e.g. 10.0.16299.0 or newer)
   * Install the Microsoft Visual Studio Installer Projects
-* Optional: Install [NASM](https://www.nasm.us/) and add it to your PATH. This is required for building the 32-bit flac plugin.
-* Open cuetools.net\CUETools\CUETools.sln
+* Open cuetools.net\CUETools.sln
 * Select 'Any CPU' under 'Solution Platforms'
 * Build solution
