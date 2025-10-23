@@ -243,6 +243,42 @@
   <data name="dataGridVwColISRC.HeaderText" xml:space="preserve">
     <value>ISRC</value>
   </data>
+  <metadata name="dataGridVwColPregap.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="dataGridVwColPregap.HeaderText" xml:space="preserve">
+    <value>Pregap</value>
+  </data>
+  <data name="dataGridVwColPregap.Width" type="System.Int32, mscorlib">
+    <value>40</value>
+  </data>
+  <metadata name="dataGridVwColIsAudio.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="dataGridVwColIsAudio.HeaderText" xml:space="preserve">
+    <value>Audio</value>
+  </data>
+  <data name="dataGridVwColIsAudio.Width" type="System.Int32, mscorlib">
+    <value>40</value>
+  </data>
+  <metadata name="dataGridVwColPreEmphasis.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="dataGridVwColPreEmphasis.HeaderText" xml:space="preserve">
+    <value>PreEmp</value>
+  </data>
+  <data name="dataGridVwColPreEmphasis.Width" type="System.Int32, mscorlib">
+    <value>40</value>
+  </data>
+  <metadata name="dataGridVwColDCP.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="dataGridVwColDCP.HeaderText" xml:space="preserve">
+    <value>DCP</value>
+  </data>
+  <data name="dataGridVwColDCP.Width" type="System.Int32, mscorlib">
+    <value>40</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="datagridviewTracks.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -833,7 +869,7 @@ If required, the C2 error mode can be set here.</value>
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
         LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
         ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAABy
-        CQAAAk1TRnQBSQFMAgEBBAEAATwBBAE8AQQBEAEAARABAAT/AQkBAAj/AUIBTQE2AQQGAAE2AQQCAAEo
+        CQAAAk1TRnQBSQFMAgEBBAEAAUwBBAFMAQQBEAEAARABAAT/AQkBAAj/AUIBTQE2AQQGAAE2AQQCAAEo
         AwABQAMAASADAAEBAQABCAYAAQgYAAGAAgABgAMAAoABAAGAAwABgAEAAYABAAKAAgADwAEAAcAB3AHA
         AQAB8AHKAaYBAAEzBQABMwEAATMBAAEzAQACMwIAAxYBAAMcAQADIgEAAykBAANVAQADTQEAA0IBAAM5
         AQABgAF8Af8BAAJQAf8BAAGTAQAB1gEAAf8B7AHMAQABxgHWAe8BAAHWAucBAAGQAakBrQIAAf8BMwMA
@@ -907,7 +943,7 @@ If required, the C2 error mode can be set here.</value>
     <value>progressBarErrors</value>
   </data>
   <data name="&gt;&gt;progressBarErrors.Type" xml:space="preserve">
-    <value>ProgressODoom.ProgressBarEx, ProgressODoom, Version=1.0.9424.24455, Culture=neutral, PublicKeyToken=null</value>
+    <value>ProgressODoom.ProgressBarEx, ProgressODoom, Version=1.0.9426.26960, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;progressBarErrors.Parent" xml:space="preserve">
     <value>panel1</value>
@@ -934,7 +970,7 @@ If required, the C2 error mode can be set here.</value>
     <value>progressBarCD</value>
   </data>
   <data name="&gt;&gt;progressBarCD.Type" xml:space="preserve">
-    <value>ProgressODoom.ProgressBarEx, ProgressODoom, Version=1.0.9424.24455, Culture=neutral, PublicKeyToken=null</value>
+    <value>ProgressODoom.ProgressBarEx, ProgressODoom, Version=1.0.9426.26960, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;progressBarCD.Parent" xml:space="preserve">
     <value>panel1</value>
@@ -983,7 +1019,7 @@ If required, the C2 error mode can be set here.</value>
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
         LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
         ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAAB+
-        KwAAAk1TRnQBSQFMAgEBCwEAASABAQEgAQEBEAEAARABAAT/ASEBAAj/AUIBTQE2BwABNgMAASgDAAFA
+        KwAAAk1TRnQBSQFMAgEBCwEAATABAQEwAQEBEAEAARABAAT/ASEBAAj/AUIBTQE2BwABNgMAASgDAAFA
         AwABMAMAAQEBAAEgBgABMCoAAVwBZAFsAf8BXAFkAWwB/wFcAWQBbAH/AVwBZAFsAf8cAAFSAckC/wEv
         AYMBrAH/AS8BgwGsAf8BUgHJAv8BUgHJAv8BUgHJAv8BUgHJAv8BUgHJAv8BUgHJAv8BUgHJAv8BUgHJ
         Av8BUgHJAv8BUgHJAv8BUgHJAv+UAAFcAWQBbAH/AzMB/wMzAf8BGgIqAf8DAQH/AwEB/wMAAf8DAQH/
@@ -995,7 +1031,7 @@ If required, the C2 error mode can be set here.</value>
         AckC/wQAA1kBuwNEAXoDBQEGIAADBQEGA0QBewNYAbpMAAESAhoB/wMzAf8BXAFkAWwB/wG9AsYB/wFc
         AWQBbAH/ARICGgH/AwEB/wMBAf8DAAH/AwAB/wMAAf8DAQH/CwAB/wHLAdEBygH/AfwD/wH8A/8B/AP/
         AfwD/wMAAf8BUgHJAv8BUgHJAv8BUgHJAv8BUgHJAv8BUgHJAv8BUgHJAv8BUgHJAv8BUgHJAv8BUgHJ
-        Av8EAANBAfkDBQEGKAADBgEHA0sB+EgAARICGgH/ARoCKgH/AzMB/wMzAf8BXAFkAWwB/wFcAWQBbAH/
+        Av8EAANBAfkDBQEGKAADBgEHA08B+EgAARICGgH/ARoCKgH/AzMB/wMzAf8BXAFkAWwB/wFcAWQBbAH/
         ARoCKgH/ARICGgH/AwEB/wMAAf8DAAH/AwAB/wMAAf8BEgIaAf8EAAEvAYMBrAH/ARUBBwELAf8BaAJf
         Af8BvAK9Af8BvAK9Af8BywHRAcoB/wMAAf8BHQEbARkB/wMAAf8DAAH/AwAB/wMAAf8BHQEbARkB/wFS
         AckC/wFSAckC/wFSAckC/wQAAxgB/zAAAxgB/0gAAwEB/wESAhoB/wESAhoB/wEaAioB/wEaAioB/wMB
@@ -1055,7 +1091,7 @@ If required, the C2 error mode can be set here.</value>
         Af8B+wHWAbIB/wIAAeIB/wIAAeIB/wIAAeIB/wIAAeIB/wIAAeIB/wIAAeIB/wIAAeIB/wIAAeIB/wHC
         AYIBgwH/AY4BBwEJAf8BiAIAAf8BhAIABf8BhAIAAf8BhAIABf8BhAIABf8BhAIAAf8BhAIABf8BcAIA
         Af8BagIAAf8BMQIAAf8DZQH/AwQB/wNNAf8DsgH/A7IB/wPAAf8DAAH/AwoB/wMAAf8DAAH/AwAB/wMA
-        Af8DCgH/A8AB/wPAAf8DwAH/A1YBsgE/AcYBLgH/AV8BbwFfAfMDXQHMAVwBXgFcAdkBEwG3AQIB/wFZ
+        Af8DCgH/A8AB/wPAAf8DwAH/A1YBsgE/AcYBLgH/AWABbwFgAfMDXQHMAVwBXgFcAdkBEwG3AQIB/wFZ
         AWQBWQHvAVsBXgFbAdMDXQHMAVsBXgFbAdMBWQFjAVkB7wEUAbcBAwH/ARMBtgECAf8BEgG2AQEB/wNd
         AdEEAAMmATgBqQGHAUAB/QL+AfoC/wH5AekC/wHvAdgC/wHnAc0C/wHhAcIB/wH8AdwBuwH/AgAB4gH/
         AgAB4gH/AgAB4gH/AgAB4gH/AgAB4gH/AgAB4gH/AgAB4gH/AgAB4gH/AcIBggGDAf8BjgEHAQkB/wGI
@@ -1066,7 +1102,7 @@ If required, the C2 error mode can be set here.</value>
         Av8B8AHdAf8B+AHqAdkB/wH4AeYB1AH/AfsB3wHHAf8B9QHPAasB/wIAAeIB/wIAAeIB/wH4Ad0BwwH/
         AeIBzgG6Af8DTgGWAcIBggGDAf8BjgEHAQkB/wGIAgAB/wGEAgAB/wGEAgAB/wGEAgAB/wGEAgAF/wGE
         AgAF/wGEAgAB/wGEAgAB/wGEAgAB/wFwAgAB/wFqAgAB/wExAgAB/wPAAf8DwAH/A8AB/wPAAf8DAAX/
-        AwAB/wMKEf8DwAH/AwAB/wPAAf8DwAH/A1YBsgFGAc0BNQH/AV8BbwFfAfMDXQHMAVwBXgFcAdkBJAGw
+        AwAB/wMKEf8DwAH/AwAB/wPAAf8DwAH/A1YBsgFGAc0BNQH/AWABbwFgAfMDXQHMAVwBXgFcAdkBJAGw
         ARMB/wETAaIBAgH/ARIBoQEBAf8BEgGhAQEB/wEZAagBCAH/AVsBXgFbAdMDPAFmAyMBMwNPAZkDPAFm
         BAACXwFbAdAB7wHgAdAB/wHnAb4BlgH/AecBvAGUAf8B8AHMAakB/wH+AewB2gH/Ad0BxAGsAf8CZQFc
         AecCZQFcAecB3QHDAaoB/wH4Ad0BxAH/AgAB4gH/AgAB4gH/AfUB1gG4Af8B8QHfAc8B/wJfAVsB0AHC
@@ -1099,7 +1135,7 @@ If required, the C2 error mode can be set here.</value>
         AZYB2QG/AaUC/wH6AfAG/wH9AfMB/wHwAcEBowH/Ae4BxgGgAf8B/QHwAdED/wH+Av8B/QHwAv8B/QHx
         Bf8B2QG/AaUB/wNOAZYEAAT/AY4BBwEJAf8BiAIABf8BhAIACf8BhAIACf8BhAIABf8BhAIAAf8D9gH/
         A+oB/wExAgAB/wNNAf8DTQH/A00B/wNNAf8DTQH/AwoB/wMAAf8DCgH/A4YR/wMAAf8DTQH/A00B/yAA
-        A1gBuAFgAW8BXwHzAVEB2AFAAf8BYAFvAV8B8wNYAbgQAAMKAQ0DWAG4AdkBvwGlAf8B/gH9AfwC/wHx
+        A1gBuAFgAW8BYAHzAVEB2AFAAf8BYAFvAWAB8wNYAbgQAAMKAQ0DWAG4AdkBvwGlAf8B/gH9AfwC/wHx
         AeQB/wHyAcoBrgH/AfIB0gGtAf8B+QHtAcgD/wH3A/8B/QH/Af4B/QH8Af8B2QG/AaUB/wNYAbgDCgEN
         BAAE/wGRAQ4BEAn/AYgCAAH/AYgCAAn/AYgCAAH/AYgCAA3/AYMCAAH/AW4CAAH/A4AB/wNNAf8DTQH/
         A00B/wNNAf8DTQH/A00B/wNNAf8DCgH/AwAB/wMEAf8DTQH/A8AF/wMAAf8DTQH/A00B/yAAA1gBuAFi
@@ -2219,6 +2255,120 @@ If required, the C2 error mode can be set here.</value>
   <data name="&gt;&gt;toolStripStatusLabel2.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;losslessOrNotBindingSource.Name" xml:space="preserve">
+    <value>losslessOrNotBindingSource</value>
+  </data>
+  <data name="&gt;&gt;losslessOrNotBindingSource.Type" xml:space="preserve">
+    <value>System.Windows.Forms.BindingSource, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;bindingSourceCR.Name" xml:space="preserve">
+    <value>bindingSourceCR</value>
+  </data>
+  <data name="&gt;&gt;bindingSourceCR.Type" xml:space="preserve">
+    <value>System.Windows.Forms.BindingSource, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;encodersBindingSource.Name" xml:space="preserve">
+    <value>encodersBindingSource</value>
+  </data>
+  <data name="&gt;&gt;encodersBindingSource.Type" xml:space="preserve">
+    <value>System.Windows.Forms.BindingSource, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;formatsBindingSource.Name" xml:space="preserve">
+    <value>formatsBindingSource</value>
+  </data>
+  <data name="&gt;&gt;formatsBindingSource.Type" xml:space="preserve">
+    <value>System.Windows.Forms.BindingSource, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cUEStylesBindingSource.Name" xml:space="preserve">
+    <value>cUEStylesBindingSource</value>
+  </data>
+  <data name="&gt;&gt;cUEStylesBindingSource.Type" xml:space="preserve">
+    <value>System.Windows.Forms.BindingSource, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;drivesBindingSource.Name" xml:space="preserve">
+    <value>drivesBindingSource</value>
+  </data>
+  <data name="&gt;&gt;drivesBindingSource.Type" xml:space="preserve">
+    <value>System.Windows.Forms.BindingSource, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;imageListChecked.Name" xml:space="preserve">
+    <value>imageListChecked</value>
+  </data>
+  <data name="&gt;&gt;imageListChecked.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ImageList, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem1.Name" xml:space="preserve">
+    <value>toolStripMenuItem1</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;plainBackgroundPainter1.Name" xml:space="preserve">
+    <value>plainBackgroundPainter1</value>
+  </data>
+  <data name="&gt;&gt;plainBackgroundPainter1.Type" xml:space="preserve">
+    <value>ProgressODoom.PlainBackgroundPainter, ProgressODoom, Version=1.0.9426.26960, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="&gt;&gt;styledBorderPainter1.Name" xml:space="preserve">
+    <value>styledBorderPainter1</value>
+  </data>
+  <data name="&gt;&gt;styledBorderPainter1.Type" xml:space="preserve">
+    <value>ProgressODoom.StyledBorderPainter, ProgressODoom, Version=1.0.9426.26960, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="&gt;&gt;plainProgressPainter1.Name" xml:space="preserve">
+    <value>plainProgressPainter1</value>
+  </data>
+  <data name="&gt;&gt;plainProgressPainter1.Type" xml:space="preserve">
+    <value>ProgressODoom.PlainProgressPainter, ProgressODoom, Version=1.0.9426.26960, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="&gt;&gt;gradientGlossPainter1.Name" xml:space="preserve">
+    <value>gradientGlossPainter1</value>
+  </data>
+  <data name="&gt;&gt;gradientGlossPainter1.Type" xml:space="preserve">
+    <value>ProgressODoom.GradientGlossPainter, ProgressODoom, Version=1.0.9426.26960, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="&gt;&gt;plainProgressPainter2.Name" xml:space="preserve">
+    <value>plainProgressPainter2</value>
+  </data>
+  <data name="&gt;&gt;plainProgressPainter2.Type" xml:space="preserve">
+    <value>ProgressODoom.PlainProgressPainter, ProgressODoom, Version=1.0.9426.26960, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="&gt;&gt;toolTip1.Name" xml:space="preserve">
+    <value>toolTip1</value>
+  </data>
+  <data name="&gt;&gt;toolTip1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolTip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;releasesBindingSource.Name" xml:space="preserve">
+    <value>releasesBindingSource</value>
+  </data>
+  <data name="&gt;&gt;releasesBindingSource.Type" xml:space="preserve">
+    <value>System.Windows.Forms.BindingSource, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;imageListMetadataSource.Name" xml:space="preserve">
+    <value>imageListMetadataSource</value>
+  </data>
+  <data name="&gt;&gt;imageListMetadataSource.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ImageList, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;columnHeaderValue.Name" xml:space="preserve">
+    <value>columnHeaderValue</value>
+  </data>
+  <data name="&gt;&gt;columnHeaderValue.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;columnHeaderName.Name" xml:space="preserve">
+    <value>columnHeaderName</value>
+  </data>
+  <data name="&gt;&gt;columnHeaderName.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;backgroundWorkerArtwork.Name" xml:space="preserve">
+    <value>backgroundWorkerArtwork</value>
+  </data>
+  <data name="&gt;&gt;backgroundWorkerArtwork.Type" xml:space="preserve">
+    <value>System.ComponentModel.BackgroundWorker, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;dataGridVwColTrackNo.Name" xml:space="preserve">
     <value>dataGridVwColTrackNo</value>
   </data>
@@ -2279,119 +2429,29 @@ If required, the C2 error mode can be set here.</value>
   <data name="&gt;&gt;dataGridVwColISRC.Type" xml:space="preserve">
     <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;losslessOrNotBindingSource.Name" xml:space="preserve">
-    <value>losslessOrNotBindingSource</value>
+  <data name="&gt;&gt;dataGridVwColPregap.Name" xml:space="preserve">
+    <value>dataGridVwColPregap</value>
   </data>
-  <data name="&gt;&gt;losslessOrNotBindingSource.Type" xml:space="preserve">
-    <value>System.Windows.Forms.BindingSource, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="&gt;&gt;dataGridVwColPregap.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;bindingSourceCR.Name" xml:space="preserve">
-    <value>bindingSourceCR</value>
+  <data name="&gt;&gt;dataGridVwColIsAudio.Name" xml:space="preserve">
+    <value>dataGridVwColIsAudio</value>
   </data>
-  <data name="&gt;&gt;bindingSourceCR.Type" xml:space="preserve">
-    <value>System.Windows.Forms.BindingSource, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="&gt;&gt;dataGridVwColIsAudio.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewCheckBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;encodersBindingSource.Name" xml:space="preserve">
-    <value>encodersBindingSource</value>
+  <data name="&gt;&gt;dataGridVwColPreEmphasis.Name" xml:space="preserve">
+    <value>dataGridVwColPreEmphasis</value>
   </data>
-  <data name="&gt;&gt;encodersBindingSource.Type" xml:space="preserve">
-    <value>System.Windows.Forms.BindingSource, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="&gt;&gt;dataGridVwColPreEmphasis.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewCheckBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;formatsBindingSource.Name" xml:space="preserve">
-    <value>formatsBindingSource</value>
+  <data name="&gt;&gt;dataGridVwColDCP.Name" xml:space="preserve">
+    <value>dataGridVwColDCP</value>
   </data>
-  <data name="&gt;&gt;formatsBindingSource.Type" xml:space="preserve">
-    <value>System.Windows.Forms.BindingSource, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;cUEStylesBindingSource.Name" xml:space="preserve">
-    <value>cUEStylesBindingSource</value>
-  </data>
-  <data name="&gt;&gt;cUEStylesBindingSource.Type" xml:space="preserve">
-    <value>System.Windows.Forms.BindingSource, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;drivesBindingSource.Name" xml:space="preserve">
-    <value>drivesBindingSource</value>
-  </data>
-  <data name="&gt;&gt;drivesBindingSource.Type" xml:space="preserve">
-    <value>System.Windows.Forms.BindingSource, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;imageListChecked.Name" xml:space="preserve">
-    <value>imageListChecked</value>
-  </data>
-  <data name="&gt;&gt;imageListChecked.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ImageList, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStripMenuItem1.Name" xml:space="preserve">
-    <value>toolStripMenuItem1</value>
-  </data>
-  <data name="&gt;&gt;toolStripMenuItem1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;plainBackgroundPainter1.Name" xml:space="preserve">
-    <value>plainBackgroundPainter1</value>
-  </data>
-  <data name="&gt;&gt;plainBackgroundPainter1.Type" xml:space="preserve">
-    <value>ProgressODoom.PlainBackgroundPainter, ProgressODoom, Version=1.0.9424.24455, Culture=neutral, PublicKeyToken=null</value>
-  </data>
-  <data name="&gt;&gt;styledBorderPainter1.Name" xml:space="preserve">
-    <value>styledBorderPainter1</value>
-  </data>
-  <data name="&gt;&gt;styledBorderPainter1.Type" xml:space="preserve">
-    <value>ProgressODoom.StyledBorderPainter, ProgressODoom, Version=1.0.9424.24455, Culture=neutral, PublicKeyToken=null</value>
-  </data>
-  <data name="&gt;&gt;plainProgressPainter1.Name" xml:space="preserve">
-    <value>plainProgressPainter1</value>
-  </data>
-  <data name="&gt;&gt;plainProgressPainter1.Type" xml:space="preserve">
-    <value>ProgressODoom.PlainProgressPainter, ProgressODoom, Version=1.0.9424.24455, Culture=neutral, PublicKeyToken=null</value>
-  </data>
-  <data name="&gt;&gt;gradientGlossPainter1.Name" xml:space="preserve">
-    <value>gradientGlossPainter1</value>
-  </data>
-  <data name="&gt;&gt;gradientGlossPainter1.Type" xml:space="preserve">
-    <value>ProgressODoom.GradientGlossPainter, ProgressODoom, Version=1.0.9424.24455, Culture=neutral, PublicKeyToken=null</value>
-  </data>
-  <data name="&gt;&gt;plainProgressPainter2.Name" xml:space="preserve">
-    <value>plainProgressPainter2</value>
-  </data>
-  <data name="&gt;&gt;plainProgressPainter2.Type" xml:space="preserve">
-    <value>ProgressODoom.PlainProgressPainter, ProgressODoom, Version=1.0.9424.24455, Culture=neutral, PublicKeyToken=null</value>
-  </data>
-  <data name="&gt;&gt;toolTip1.Name" xml:space="preserve">
-    <value>toolTip1</value>
-  </data>
-  <data name="&gt;&gt;toolTip1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolTip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;releasesBindingSource.Name" xml:space="preserve">
-    <value>releasesBindingSource</value>
-  </data>
-  <data name="&gt;&gt;releasesBindingSource.Type" xml:space="preserve">
-    <value>System.Windows.Forms.BindingSource, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;imageListMetadataSource.Name" xml:space="preserve">
-    <value>imageListMetadataSource</value>
-  </data>
-  <data name="&gt;&gt;imageListMetadataSource.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ImageList, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;columnHeaderValue.Name" xml:space="preserve">
-    <value>columnHeaderValue</value>
-  </data>
-  <data name="&gt;&gt;columnHeaderValue.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;columnHeaderName.Name" xml:space="preserve">
-    <value>columnHeaderName</value>
-  </data>
-  <data name="&gt;&gt;columnHeaderName.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;backgroundWorkerArtwork.Name" xml:space="preserve">
-    <value>backgroundWorkerArtwork</value>
-  </data>
-  <data name="&gt;&gt;backgroundWorkerArtwork.Type" xml:space="preserve">
-    <value>System.ComponentModel.BackgroundWorker, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="&gt;&gt;dataGridVwColDCP.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewCheckBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>frmCUERipper</value>

@@ -118,9 +118,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="toolStripStatusAr.ToolTipText" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
   <data name="toolStripProgressBar1.ToolTipText" xml:space="preserve">
     <value>Leesvoortgang</value>
   </data>
@@ -157,41 +154,20 @@
   <data name="numericWriteOffset.ToolTip" xml:space="preserve">
     <value>Lees-Offset</value>
   </data>
-  <data name="bnComboBoxC2ErrorModeSetting.ToolTip" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
   <data name="checkBoxTestAndCopy.Text" xml:space="preserve">
     <value>Test en Rip</value>
   </data>
   <data name="bnComboBoxLosslessOrNot.Text" xml:space="preserve">
     <value>Verliesvrij</value>
   </data>
-  <data name="bnComboBoxFormat.Text" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="labelEncoderMinMode.Text" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
   <data name="bnComboBoxImage.Text" xml:space="preserve">
     <value>Beeldbestand</value>
-  </data>
-  <data name="labelEncoderMaxMode.Text" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="labelEncoderMode.Text" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="progressBarCD.Text" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
   </data>
   <data name="txtOutputPath.ToolTip" xml:space="preserve">
     <value>Klik om te bewerken</value>
   </data>
   <data name="bnComboBoxRelease.Text" xml:space="preserve">
     <value>Uitgaves</value>
-  </data>
-  <data name="bnComboBoxDrives.Text" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
   </data>
   <data name="columnHeaderValue.Text" xml:space="preserve">
     <value>Waarde</value>
@@ -225,17 +201,5 @@
   </data>
   <data name="buttonEjectDisk.Text" xml:space="preserve">
     <value>Uitwerpen</value>
-  </data>
-  <data name="$this.Text" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="TrackNo.Text" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="columnHeaderArtist.Text" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="listTracks.ToolTip" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
   </data>
 </root>

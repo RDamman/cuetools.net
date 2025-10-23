@@ -46,16 +46,6 @@ namespace CUERipper
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.datagridviewTracks = new System.Windows.Forms.DataGridView();
-            this.dataGridVwColTrackNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridVwColTitle = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridVwColArtist = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridVwColStart = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridVwColLength = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridVwColEnd = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridVwColComposer = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridVwColLyricist = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridVwColComment = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridVwColISRC = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.buttonGo = new System.Windows.Forms.Button();
             this.buttonAbort = new System.Windows.Forms.Button();
             this.buttonPause = new System.Windows.Forms.Button();
@@ -116,6 +106,20 @@ namespace CUERipper
             this.panel5 = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
             this.backgroundWorkerArtwork = new System.ComponentModel.BackgroundWorker();
+            this.dataGridVwColTrackNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridVwColTitle = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridVwColArtist = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridVwColStart = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridVwColLength = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridVwColEnd = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridVwColComposer = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridVwColLyricist = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridVwColComment = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridVwColISRC = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridVwColPregap = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridVwColIsAudio = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.dataGridVwColPreEmphasis = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.dataGridVwColDCP = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.datagridviewTracks)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericWriteOffset)).BeginInit();
@@ -221,7 +225,11 @@ namespace CUERipper
             this.dataGridVwColComposer,
             this.dataGridVwColLyricist,
             this.dataGridVwColComment,
-            this.dataGridVwColISRC});
+            this.dataGridVwColISRC,
+            this.dataGridVwColPregap,
+            this.dataGridVwColIsAudio,
+            this.dataGridVwColPreEmphasis,
+            this.dataGridVwColDCP});
             resources.ApplyResources(this.datagridviewTracks, "datagridviewTracks");
             this.datagridviewTracks.Name = "datagridviewTracks";
             this.toolTip1.SetToolTip(this.datagridviewTracks, resources.GetString("datagridviewTracks.ToolTip"));
@@ -229,70 +237,6 @@ namespace CUERipper
             this.datagridviewTracks.DoubleClick += new System.EventHandler(this.gridTracks_DoubleClick);
             this.datagridviewTracks.KeyDown += new System.Windows.Forms.KeyEventHandler(this.datagridviewTracks_KeyDown);
             this.datagridviewTracks.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.listTracks_PreviewKeyDown);
-            // 
-            // dataGridVwColTrackNo
-            // 
-            this.dataGridVwColTrackNo.DataPropertyName = "Number";
-            resources.ApplyResources(this.dataGridVwColTrackNo, "dataGridVwColTrackNo");
-            this.dataGridVwColTrackNo.Name = "dataGridVwColTrackNo";
-            this.dataGridVwColTrackNo.ReadOnly = true;
-            // 
-            // dataGridVwColTitle
-            // 
-            this.dataGridVwColTitle.DataPropertyName = "Title";
-            resources.ApplyResources(this.dataGridVwColTitle, "dataGridVwColTitle");
-            this.dataGridVwColTitle.Name = "dataGridVwColTitle";
-            // 
-            // dataGridVwColArtist
-            // 
-            this.dataGridVwColArtist.DataPropertyName = "Artist";
-            resources.ApplyResources(this.dataGridVwColArtist, "dataGridVwColArtist");
-            this.dataGridVwColArtist.Name = "dataGridVwColArtist";
-            // 
-            // dataGridVwColStart
-            // 
-            this.dataGridVwColStart.DataPropertyName = "Start";
-            resources.ApplyResources(this.dataGridVwColStart, "dataGridVwColStart");
-            this.dataGridVwColStart.Name = "dataGridVwColStart";
-            this.dataGridVwColStart.ReadOnly = true;
-            // 
-            // dataGridVwColLength
-            // 
-            this.dataGridVwColLength.DataPropertyName = "Length";
-            resources.ApplyResources(this.dataGridVwColLength, "dataGridVwColLength");
-            this.dataGridVwColLength.Name = "dataGridVwColLength";
-            this.dataGridVwColLength.ReadOnly = true;
-            // 
-            // dataGridVwColEnd
-            // 
-            this.dataGridVwColEnd.DataPropertyName = "End";
-            resources.ApplyResources(this.dataGridVwColEnd, "dataGridVwColEnd");
-            this.dataGridVwColEnd.Name = "dataGridVwColEnd";
-            // 
-            // dataGridVwColComposer
-            // 
-            this.dataGridVwColComposer.DataPropertyName = "Composer";
-            resources.ApplyResources(this.dataGridVwColComposer, "dataGridVwColComposer");
-            this.dataGridVwColComposer.Name = "dataGridVwColComposer";
-            // 
-            // dataGridVwColLyricist
-            // 
-            this.dataGridVwColLyricist.DataPropertyName = "Lyricist";
-            resources.ApplyResources(this.dataGridVwColLyricist, "dataGridVwColLyricist");
-            this.dataGridVwColLyricist.Name = "dataGridVwColLyricist";
-            // 
-            // dataGridVwColComment
-            // 
-            this.dataGridVwColComment.DataPropertyName = "Comment";
-            resources.ApplyResources(this.dataGridVwColComment, "dataGridVwColComment");
-            this.dataGridVwColComment.Name = "dataGridVwColComment";
-            // 
-            // dataGridVwColISRC
-            // 
-            this.dataGridVwColISRC.DataPropertyName = "ISRC";
-            resources.ApplyResources(this.dataGridVwColISRC, "dataGridVwColISRC");
-            this.dataGridVwColISRC.Name = "dataGridVwColISRC";
-            this.dataGridVwColISRC.ReadOnly = true;
             // 
             // buttonGo
             // 
@@ -856,6 +800,100 @@ namespace CUERipper
             this.backgroundWorkerArtwork.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorkerArtwork_ProgressChanged);
             this.backgroundWorkerArtwork.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorkerArtwork_RunWorkerCompleted);
             // 
+            // dataGridVwColTrackNo
+            // 
+            this.dataGridVwColTrackNo.DataPropertyName = "Number";
+            resources.ApplyResources(this.dataGridVwColTrackNo, "dataGridVwColTrackNo");
+            this.dataGridVwColTrackNo.Name = "dataGridVwColTrackNo";
+            this.dataGridVwColTrackNo.ReadOnly = true;
+            // 
+            // dataGridVwColTitle
+            // 
+            this.dataGridVwColTitle.DataPropertyName = "Title";
+            resources.ApplyResources(this.dataGridVwColTitle, "dataGridVwColTitle");
+            this.dataGridVwColTitle.Name = "dataGridVwColTitle";
+            // 
+            // dataGridVwColArtist
+            // 
+            this.dataGridVwColArtist.DataPropertyName = "Artist";
+            resources.ApplyResources(this.dataGridVwColArtist, "dataGridVwColArtist");
+            this.dataGridVwColArtist.Name = "dataGridVwColArtist";
+            // 
+            // dataGridVwColStart
+            // 
+            this.dataGridVwColStart.DataPropertyName = "Start";
+            resources.ApplyResources(this.dataGridVwColStart, "dataGridVwColStart");
+            this.dataGridVwColStart.Name = "dataGridVwColStart";
+            this.dataGridVwColStart.ReadOnly = true;
+            // 
+            // dataGridVwColLength
+            // 
+            this.dataGridVwColLength.DataPropertyName = "Length";
+            resources.ApplyResources(this.dataGridVwColLength, "dataGridVwColLength");
+            this.dataGridVwColLength.Name = "dataGridVwColLength";
+            this.dataGridVwColLength.ReadOnly = true;
+            // 
+            // dataGridVwColEnd
+            // 
+            this.dataGridVwColEnd.DataPropertyName = "End";
+            resources.ApplyResources(this.dataGridVwColEnd, "dataGridVwColEnd");
+            this.dataGridVwColEnd.Name = "dataGridVwColEnd";
+            // 
+            // dataGridVwColComposer
+            // 
+            this.dataGridVwColComposer.DataPropertyName = "Composer";
+            resources.ApplyResources(this.dataGridVwColComposer, "dataGridVwColComposer");
+            this.dataGridVwColComposer.Name = "dataGridVwColComposer";
+            // 
+            // dataGridVwColLyricist
+            // 
+            this.dataGridVwColLyricist.DataPropertyName = "Lyricist";
+            resources.ApplyResources(this.dataGridVwColLyricist, "dataGridVwColLyricist");
+            this.dataGridVwColLyricist.Name = "dataGridVwColLyricist";
+            // 
+            // dataGridVwColComment
+            // 
+            this.dataGridVwColComment.DataPropertyName = "Comment";
+            resources.ApplyResources(this.dataGridVwColComment, "dataGridVwColComment");
+            this.dataGridVwColComment.Name = "dataGridVwColComment";
+            // 
+            // dataGridVwColISRC
+            // 
+            this.dataGridVwColISRC.DataPropertyName = "ISRC";
+            resources.ApplyResources(this.dataGridVwColISRC, "dataGridVwColISRC");
+            this.dataGridVwColISRC.Name = "dataGridVwColISRC";
+            this.dataGridVwColISRC.ReadOnly = true;
+            // 
+            // dataGridVwColPregap
+            // 
+            this.dataGridVwColPregap.DataPropertyName = "Pregap";
+            resources.ApplyResources(this.dataGridVwColPregap, "dataGridVwColPregap");
+            this.dataGridVwColPregap.Name = "dataGridVwColPregap";
+            this.dataGridVwColPregap.ReadOnly = true;
+            this.dataGridVwColPregap.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridVwColPregap.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // dataGridVwColIsAudio
+            // 
+            this.dataGridVwColIsAudio.DataPropertyName = "IsAudio";
+            resources.ApplyResources(this.dataGridVwColIsAudio, "dataGridVwColIsAudio");
+            this.dataGridVwColIsAudio.Name = "dataGridVwColIsAudio";
+            this.dataGridVwColIsAudio.ReadOnly = true;
+            // 
+            // dataGridVwColPreEmphasis
+            // 
+            this.dataGridVwColPreEmphasis.DataPropertyName = "PreEmphasis";
+            resources.ApplyResources(this.dataGridVwColPreEmphasis, "dataGridVwColPreEmphasis");
+            this.dataGridVwColPreEmphasis.Name = "dataGridVwColPreEmphasis";
+            this.dataGridVwColPreEmphasis.ReadOnly = true;
+            // 
+            // dataGridVwColDCP
+            // 
+            this.dataGridVwColDCP.DataPropertyName = "DCP";
+            resources.ApplyResources(this.dataGridVwColDCP, "dataGridVwColDCP");
+            this.dataGridVwColDCP.Name = "dataGridVwColDCP";
+            this.dataGridVwColDCP.ReadOnly = true;
+            // 
             // frmCUERipper
             // 
             resources.ApplyResources(this, "$this");
@@ -978,6 +1016,10 @@ namespace CUERipper
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridVwColLyricist;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridVwColComment;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridVwColISRC;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridVwColPregap;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn dataGridVwColIsAudio;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn dataGridVwColPreEmphasis;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn dataGridVwColDCP;
     }
 }
 

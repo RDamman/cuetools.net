@@ -474,7 +474,6 @@ namespace CUERipper
 				if (driveInfo.drive != null)
 					driveInfo.drive.Close();
 			data.Drives.Clear();
-			//datagridviewTracks.Items.Clear();
 			data.Releases.Clear();
 			data.selectedRelease = null;
             ResetAlbumArt();
@@ -607,7 +606,13 @@ namespace CUERipper
                 else
                     cueSheet.ArTestVerify = null;
 
-                cueSheet.Go();
+                cueSheet.Go(() =>
+				{
+					this.Invoke((MethodInvoker)delegate ()
+					{
+						UpdateRelease();
+					});
+				});
                 cueSheet.CTDB.Submit(
 					(int)cueSheet.ArVerify.WorstConfidence() + 1,
 					audioSource.CorrectionQuality == 0 ? 0 :
@@ -681,9 +686,6 @@ namespace CUERipper
 			this.BeginInvoke((MethodInvoker)delegate()
 			{
 				SetupControls();
-//				if (_config.ejectAfterRip)
-					UpdateDrive();
-//				UpdateOutputPath();
 			});
 		}
 
@@ -798,7 +800,7 @@ namespace CUERipper
 				if (data.selectedRelease != null)
 				{
                     dataGridVwColArtist.Width = data.selectedRelease.metadata.IsVarious() ? 120 : 0;
-					CDImageLayout cdImageLayoutTOC = selectedDriveInfo.drive.TOC;
+					CDImageLayout cdImageLayoutTOC = cueSheet.TOC;
 					for (int i = 1; i <= cdImageLayoutTOC.TrackCount; i++)
 					{
 						//						string title = "Data track";
@@ -819,15 +821,8 @@ namespace CUERipper
 
 						//
 						listTracksGrid.Add(new CueTrackMetaTOCWrapper(trackMetaData, cdtrack));
-						/*						datagridviewTracks.Items.Add(new ListViewItem(new string[] { 
-													title,
-													cdtrack.Number.ToString(), 
-													artist,
-													cdtrack.StartMSF, 
-													cdtrack.LengthMSF }));*/
 					}
 					datagridviewTracks.DataSource = listTracksGrid;
-//					datagridviewTracks.DataSource = data.selectedRelease.metadata.Tracks;
 				}
 				datagridviewTracks.Focus();
 			}
@@ -1158,7 +1153,6 @@ namespace CUERipper
 			toolStripStatusLabelMusicBrainz.Enabled = false;
 			toolStripStatusLabelMusicBrainz.Text = "";
 			toolStripStatusLabelMusicBrainz.ToolTipText = "";
-//			datagridviewTracks.Items.Clear();
 			data.Releases.Clear();
 			data.selectedRelease = null;
             ResetAlbumArt();
