@@ -40,8 +40,9 @@ namespace CUERipper
         public readonly static XmlSerializerNamespaces xmlEmptyNamespaces = new XmlSerializerNamespaces(new XmlQualifiedName[] { XmlQualifiedName.Empty });
         public readonly static XmlWriterSettings xmlEmptySettings = new XmlWriterSettings { Indent = true, OmitXmlDeclaration = true };
 		//        static FileSystemWatcher _fileSystemWatcher = new FileSystemWatcher();
-		private System.Windows.Forms.Timer timerDriveReady = new System.Windows.Forms.Timer();
-		private bool _bDriveReady = false;
+		private System.Windows.Forms.Timer _timerDriveReady = new System.Windows.Forms.Timer();
+        private System.Timers.Timer _timerProgress = new System.Timers.Timer();
+        private bool _bDriveReady = false;
 
 		private void EnableDoubleBuffering(DataGridView dgv)
 		{
@@ -81,9 +82,9 @@ namespace CUERipper
 			m_icon_mgr.SetExtensionIcon(".ogg", Properties.Resources.ogg);
 			m_icon_mgr.SetExtensionIcon(".opus", Properties.Resources.opus);
             m_icon_mgr.SetExtensionIcon(".wma", Properties.Resources.wma);
-			timerDriveReady.Interval = 1000; // 1 seconde
-            timerDriveReady.Tick += onTimerDriveStatus;
-            timerDriveReady.Start();
+			_timerDriveReady.Interval = 1000; // 1 seconde
+            _timerDriveReady.Tick += onTimerDriveStatus;
+            _timerDriveReady.Start();
 		}
 
 
@@ -560,31 +561,59 @@ namespace CUERipper
 			});
 		}
 
+        private ReadProgressArgs _readProgressArgs = new ReadProgressArgs();
+		private int _iCorrectionQualityProgress;
+		private int _iAudioLengthProgress;
+
+
 		private void CDReadProgress(object sender, ReadProgressArgs e)
-		{		
+		{
 			CheckStop();
-
-			ICDRipper audioSource = sender as ICDRipper;
-			int processed = e.Position - e.PassStart;
-			TimeSpan elapsed = DateTime.Now - e.PassTime;
-			double speed = elapsed.TotalSeconds > 0 ? processed / elapsed.TotalSeconds / 75 : 1.0;
-
-			double percentTrck = (double)(e.Position - e.PassStart) / (e.PassEnd - e.PassStart);
-			string retry = e.Pass > 0 ? " (" + Properties.Resources.Retry + " " + e.Pass.ToString() + ")" : "";
-			string status = (elapsed.TotalSeconds > 0 && e.Pass >= 0) ?
-				string.Format("{0} @{1:00.00}x{2}...", e.Action, speed, retry) :
-				string.Format("{0}{1}...", e.Action, retry);
-			this.BeginInvoke((MethodInvoker)delegate()
+			lock (this)
 			{
-				toolStripStatusLabel1.Text = status;
-				toolStripProgressBar1.Value = Math.Max(0, Math.Min(100, (int)(percentTrck * 100)));
+				_readProgressArgs.assign(e);
+				ICDRipper audioSource = sender as ICDRipper;
+				_iCorrectionQualityProgress = audioSource.CorrectionQuality;
+				_iAudioLengthProgress = (int)audioSource.TOC.AudioLength;
+                _timerProgress.Start();
 
-                progressBarErrors.Value = Math.Max(0,Math.Min(progressBarErrors.Maximum, (int)(100 * Math.Log(e.ErrorsCount / 10.0 + 1) / Math.Log((e.PassEnd - e.PassStart) / 10.0 + 1))));
-				progressBarErrors.Enabled = e.Pass >= audioSource.CorrectionQuality;
+			}
+		}
 
-				progressBarCD.Maximum = (int) audioSource.TOC.AudioLength;
-				progressBarCD.Value = Math.Max(0, Math.Min(progressBarCD.Maximum, (int)e.PassStart + (e.PassEnd - e.PassStart) * (Math.Min(e.Pass, audioSource.CorrectionQuality) + 1) / (audioSource.CorrectionQuality + 1)));
-			});
+
+        private void onTimerReadProgress(object sender, EventArgs e)
+		{
+			lock (this)
+			{
+                int iErrorsCount = _readProgressArgs.ErrorsCount;
+                int iPassEnd = _readProgressArgs.PassEnd;
+                int iPassStart = _readProgressArgs.PassStart;
+                int iPass = _readProgressArgs.Pass;
+                int processed = _readProgressArgs.Position - iPassStart;
+				TimeSpan elapsed = DateTime.Now - _readProgressArgs.PassTime;
+				double speed = elapsed.TotalSeconds > 0 ? processed / elapsed.TotalSeconds / 75 : 1.0;
+
+				double percentTrck = (double)(_readProgressArgs.Position - iPassStart) / (iPassEnd - iPassStart);
+				string retry = iPass > 0 ? " (" + Properties.Resources.Retry + " " + iPass.ToString() + ")" : "";
+				string status = (elapsed.TotalSeconds > 0 && iPass >= 0) ?
+				string.Format("{0} @{1:00.00}x{2}...", _readProgressArgs.Action, speed, retry) :
+				string.Format("{0}{1}...", _readProgressArgs.Action, retry);
+                int iCorrectionQualityProgress = _iCorrectionQualityProgress;
+                int iAudioLengthProgress = _iAudioLengthProgress;
+                //
+                this.BeginInvoke((MethodInvoker)delegate ()
+				{
+
+					toolStripStatusLabel1.Text = status;
+					toolStripProgressBar1.Value = Math.Max(0, Math.Min(100, (int)(percentTrck * 100)));
+
+					progressBarErrors.Value = Math.Max(0, Math.Min(progressBarErrors.Maximum, (int)(100 * Math.Log(iErrorsCount / 10.0 + 1) / Math.Log((iPassEnd - iPassStart) / 10.0 + 1))));
+					progressBarErrors.Enabled = iPass >= iCorrectionQualityProgress;
+
+					progressBarCD.Maximum = iAudioLengthProgress;
+					progressBarCD.Value = Math.Max(0, Math.Min(progressBarCD.Maximum, (int)iPassStart + (iPassEnd - iPassStart) * (Math.Min(iPass, iCorrectionQualityProgress) + 1) / (iCorrectionQualityProgress + 1)));
+				});
+			}
 		}
 
 		private void Rip(object o)
@@ -594,8 +623,11 @@ namespace CUERipper
 			audioSource.ReadProgress += new EventHandler<ReadProgressArgs>(CDReadProgress);
 			audioSource.DriveOffset = (int)numericWriteOffset.Value;
 			bool bDisableEjectDisc = _config.disableEjectDisc;
-			try
-			{
+            _timerProgress.Interval = 100; // 100 ms
+			_timerProgress.AutoReset = false;
+            _timerProgress.Elapsed += onTimerReadProgress;
+            try
+            {
 				if (bDisableEjectDisc)
 				this.Invoke((MethodInvoker)delegate ()
 				{
@@ -613,6 +645,13 @@ namespace CUERipper
 						UpdateRelease();
 					});
 				});
+                //
+                if (_timerProgress.Enabled)
+                {
+                    _timerProgress.Stop();
+                    onTimerReadProgress(null, null);
+                }
+                //
                 cueSheet.CTDB.Submit(
 					(int)cueSheet.ArVerify.WorstConfidence() + 1,
 					audioSource.CorrectionQuality == 0 ? 0 :
@@ -659,7 +698,8 @@ namespace CUERipper
 //#endif
 			finally
 			{
-				if (bDisableEjectDisc)
+                _timerProgress.Elapsed -= onTimerReadProgress;
+                if (bDisableEjectDisc)
 					this.Invoke((MethodInvoker)delegate ()
 					{
 					audioSource.DisableEjectDisc(false);
