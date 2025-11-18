@@ -26,7 +26,7 @@ namespace CUETools.Processor
     {
         #region Fields
 
-        public readonly static string CUEToolsVersion = "2.2.6.3";
+        public readonly static string CUEToolsVersion = "2.2.6.4";
 
         private bool _stop, _pause;
         private List<CUELine> _attributes;
@@ -3018,30 +3018,34 @@ namespace CUETools.Processor
                                         fileInfo.Tag.Comment = Metadata.Comment;
                                     if (fileInfo.Tag.Composers.Length==0 && Metadata.Tracks[iTrack].Composer != "")
                                         fileInfo.Tag.Composers = Metadata.Tracks[iTrack].Composer.Split(';');
-                                    if (fileInfo.Tag.Lyrics == null && Metadata.Tracks[iTrack].Lyricist != "")
-                                        fileInfo.Tag.Lyrics = Metadata.Tracks[iTrack].Lyricist;
-                                    /*var lyricist = Metadata.Tracks[iTrack].Lyricist;
+                                    //if (fileInfo.Tag.Lyrics == null && Metadata.Tracks[iTrack].Lyricist != "")
+                                    //    fileInfo.Tag.Lyrics = Metadata.Tracks[iTrack].Lyricist;
+                                    var lyricist = Metadata.Tracks[iTrack].Lyricist;
                                     if (lyricist != null && lyricist != "")
                                     {
+                                        var lyricists = lyricist.Split(';');
                                         if (fileInfo.TagTypes.HasFlag(TagLib.TagTypes.Id3v2))
                                         {
                                             var id3v2 = (TagLib.Id3v2.Tag)fileInfo.GetTag(TagLib.TagTypes.Id3v2, true);
-                                            // Remove old TLYR frames
-                                            id3v2.RemoveFrames("TLYR");
-                                            // New TLYR frame (UTF-8)
-                                            var tlyr = new TagLib.Id3v2.TextInformationFrame("TLYR", 3); // 3=UTF-8
-                                            var lyricists = lyricist.Split(';');
-                                            tlyr.Text = lyricists;
-                                            id3v2.AddFrame(tlyr);
+                                            // Remove old TEXT frames
+                                            try { id3v2.RemoveFrames("TEXT"); } catch { }
+                                            // New TEXT frame
+                                            var frameLyricist = new TagLib.Id3v2.TextInformationFrame("TEXT");
+                                            frameLyricist.Text = lyricists;
+                                            id3v2.AddFrame(frameLyricist);
                                         }
+                                        else if (fileInfo.TagTypes.HasFlag(TagLib.TagTypes.Xiph))
+                                        {
+                                            TagLib.Ogg.XiphComment xiphComment = (TagLib.Ogg.XiphComment)fileInfo.GetTag(TagLib.TagTypes.Xiph, true);
+                                            xiphComment.SetField("LYRICIST", lyricists);
+                                        }
+                                        /*
                                         else if (fileInfo.TagTypes.HasFlag(TagLib.TagTypes.FlacMetadata))
                                         {
-                                            //var flacTag = fileInfo.GetTag(TagLib.TagTypes.FlacMetadata, true);
                                             var flacTag = (TagLib.Flac.Metadata)fileInfo.GetTag(TagLib.TagTypes.FlacMetadata, true);
                                             flacTag.Lyrics = lyricist;
-                                            //SetValue("LYRICIST", lyricist);
-                                        }
-                                    }*/
+                                        }*/
+                                    }
                                     if (fileInfo.Tag.ReleaseDate == null && Metadata.ReleaseDate != "")
                                         fileInfo.Tag.ReleaseDate = Metadata.ReleaseDate;
                                     if (fileInfo.Tag.MusicBrainzReleaseCountry == null && Metadata.Country != "")
